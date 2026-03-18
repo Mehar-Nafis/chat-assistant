@@ -1,0 +1,63 @@
+# Chain Server — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-chain-server
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: chain-server
+spec:
+  replicas: {{ .Values.chainServer.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: chain-server
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: chain-server
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: chain-server
+          image: {{ .Values.chainServer.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.appSecretName" . }}
+                  key: LLM_API_KEY
+            - name: CATALOG_RETRIEVER_URL
+              value: "http://{{ include "chatassistant.fullname" . }}-catalog-retriever:{{ .Values.catalogRetriever.port }}"
+            - name: MEMORY_RETRIEVER_URL
+              value: "http://{{ include "chatassistant.fullname" . }}-memory-retriever:{{ .Values.memoryRetriever.port }}"
+          ports:
+            - containerPort: {{ .Values.chainServer.port }}
+              name: http
+          volumeMounts:
+            - name: shared
+              mountPath: /app/shared
+      volumes:
+        - name: shared
+          persistentVolumeClaim:
+            claimName: {{ include "chatassistant.fullname" . }}-shared
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-chain-server
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.chainServer.port }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: chain-server
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -1,0 +1,90 @@
+# Milvus — StatefulSet + headless Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-milvus
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: {{ .Values.milvus.port }}
+      targetPort: grpc
+      name: grpc
+    - port: {{ .Values.milvus.metricsPort }}
+      targetPort: metrics
+      name: metrics
+  selector:
+    app.kubernetes.io/name: milvus
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-milvus
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: milvus
+spec:
+  serviceName: {{ include "chatassistant.fullname" . }}-milvus
+  replicas: {{ .Values.milvus.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: milvus
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: milvus
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: milvus
+          image: {{ .Values.milvus.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          command: [ "milvus", "run", "standalone" ]
+          env:
+            - name: ETCD_ENDPOINTS
+              value: "{{ include "chatassistant.fullname" . }}-etcd:2379"
+            - name: MINIO_ADDRESS
+              value: "{{ include "chatassistant.fullname" . }}-minio:{{ .Values.minio.apiPort }}"
+            - name: MINIO_ACCESS_KEY
+              value: {{ .Values.minio.accessKey | quote }}
+            - name: MINIO_SECRET_KEY
+              value: {{ .Values.minio.secretKey | quote }}
+            - name: COMMON_STORAGETYPE
+              value: "local"
+          ports:
+            - containerPort: {{ .Values.milvus.port }}
+              name: grpc
+            - containerPort: {{ .Values.milvus.metricsPort }}
+              name: metrics
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/milvus
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ ReadWriteOnce ]
+        resources:
+          requests:
+            storage: {{ .Values.milvus.pvcSize }}

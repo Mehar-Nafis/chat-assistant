@@ -1,0 +1,46 @@
+# Notification Agent — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-notification-agent
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: notification-agent
+spec:
+  replicas: {{ .Values.notificationAgent.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: notification-agent
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: notification-agent
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: notification-agent
+          image: {{ .Values.notificationAgent.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.notificationAgent.port }}
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-notification-agent
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.notificationAgent.port }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: notification-agent
+    app.kubernetes.io/instance: {{ .Release.Name }}

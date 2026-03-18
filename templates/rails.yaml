@@ -1,0 +1,59 @@
+# Guardrails (Rails) — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-rails
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: rails
+spec:
+  replicas: {{ .Values.rails.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rails
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rails
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: rails
+          image: {{ .Values.rails.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: NVIDIA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.appSecretName" . }}
+                  key: RAIL_API_KEY
+          ports:
+            - containerPort: {{ .Values.rails.port }}
+              name: http
+          volumeMounts:
+            - name: shared
+              mountPath: /app/shared
+      volumes:
+        - name: shared
+          persistentVolumeClaim:
+            claimName: {{ include "chatassistant.fullname" . }}-shared
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-rails
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.rails.port }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: rails
+    app.kubernetes.io/instance: {{ .Release.Name }}

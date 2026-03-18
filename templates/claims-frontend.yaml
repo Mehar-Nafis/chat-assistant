@@ -1,0 +1,49 @@
+# Claims Frontend — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-claims-frontend
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: claims-frontend
+spec:
+  replicas: {{ .Values.claimsFrontend.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: claims-frontend
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: claims-frontend
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: claims-frontend
+          image: {{ .Values.claimsFrontend.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: VITE_BACKEND_URL
+              value: "http://{{ include "chatassistant.fullname" . }}-chain-server:{{ .Values.chainServer.port }}"
+          ports:
+            - containerPort: {{ .Values.claimsFrontend.port }}
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-claims-frontend
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.claimsFrontend.servicePort }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: claims-frontend
+    app.kubernetes.io/instance: {{ .Release.Name }}

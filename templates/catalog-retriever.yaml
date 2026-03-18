@@ -1,0 +1,63 @@
+# Catalog Retriever — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-catalog-retriever
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: catalog-retriever
+spec:
+  replicas: {{ .Values.catalogRetriever.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: catalog-retriever
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: catalog-retriever
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: catalog-retriever
+          image: {{ .Values.catalogRetriever.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: EMBED_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.appSecretName" . }}
+                  key: EMBED_API_KEY
+            - name: MILVUS_HOST
+              value: "{{ include "chatassistant.fullname" . }}-milvus"
+            - name: MILVUS_PORT
+              value: {{ .Values.milvus.port | quote }}
+          ports:
+            - containerPort: {{ .Values.catalogRetriever.port }}
+              name: http
+          volumeMounts:
+            - name: shared
+              mountPath: /app/shared
+      volumes:
+        - name: shared
+          persistentVolumeClaim:
+            claimName: {{ include "chatassistant.fullname" . }}-shared
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-catalog-retriever
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.catalogRetriever.port }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: catalog-retriever
+    app.kubernetes.io/instance: {{ .Release.Name }}

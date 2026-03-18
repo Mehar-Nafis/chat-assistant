@@ -1,0 +1,52 @@
+# Text-to-SQL Agent — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-text-to-sql-agent
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: text-to-sql-agent
+spec:
+  replicas: {{ .Values.textToSqlAgent.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: text-to-sql-agent
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: text-to-sql-agent
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: text-to-sql-agent
+          image: {{ .Values.textToSqlAgent.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.appSecretName" . }}
+                  key: LLM_API_KEY
+          ports:
+            - containerPort: {{ .Values.textToSqlAgent.port }}
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-text-to-sql-agent
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.textToSqlAgent.port }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: text-to-sql-agent
+    app.kubernetes.io/instance: {{ .Release.Name }}

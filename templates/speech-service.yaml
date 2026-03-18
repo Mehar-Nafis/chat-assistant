@@ -1,0 +1,49 @@
+# Speech Service — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-speech-service
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: speech-service
+spec:
+  replicas: {{ .Values.speechService.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: speech-service
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: speech-service
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      containers:
+        - name: speech-service
+          image: {{ .Values.speechService.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: RIVA_URI
+              value: "{{ include "chatassistant.fullname" . }}-riva-speech:{{ .Values.rivaSpeech.grpcPort }}"
+          ports:
+            - containerPort: {{ .Values.speechService.port }}
+              name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-speech-service
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.speechService.port }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: speech-service
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -1,0 +1,12 @@
+# Shared PVC for services that mount ./shared:/app/shared
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-shared
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  accessModes: [ ReadWriteMany ]
+  resources:
+    requests:
+      storage: {{ .Values.sharedVolume.pvcSize }}

@@ -1,0 +1,70 @@
+# Riva Speech Services — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-riva-speech
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: riva-speech
+spec:
+  replicas: {{ .Values.rivaSpeech.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: riva-speech
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: riva-speech
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        insurance-claim/gpu-workload: "true"
+    spec:
+      {{- include "chatassistant.gpuTopologySpread" . | nindent 6 }}
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      imagePullSecrets:
+        - name: {{ include "chatassistant.imagePullSecretName" . }}
+      containers:
+        - name: riva-speech
+          image: {{ .Values.rivaSpeech.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: NGC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.nvidiaSecretName" . }}
+                  key: NGC_API_KEY
+          ports:
+            - containerPort: {{ .Values.rivaSpeech.grpcPort }}
+              name: grpc
+            - containerPort: {{ .Values.rivaSpeech.httpPort }}
+              name: http
+          volumeMounts:
+            - name: riva-data
+              mountPath: /data
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.rivaSpeech.gpu | quote }}
+      volumes:
+        - name: riva-data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-riva-speech
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.rivaSpeech.grpcPort }}
+      targetPort: grpc
+      name: grpc
+    - port: {{ .Values.rivaSpeech.httpPort }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: riva-speech
+    app.kubernetes.io/instance: {{ .Release.Name }}

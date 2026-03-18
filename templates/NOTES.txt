@@ -1,0 +1,66 @@
+=====================================================
+  Chat Assistant — OpenShift Helm Chart
+=====================================================
+
+Release:   {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+=====================================================
+  OpenShift Routes
+=====================================================
+{{- if .Values.routes.frontend.enabled }}
+  Frontend:        https://{{ include "chatassistant.fullname" . }}-frontend-{{ .Release.Namespace }}.apps.<cluster-domain>
+{{- end }}
+{{- if .Values.routes.chainServer.enabled }}
+  Chain Server:    https://{{ include "chatassistant.fullname" . }}-chain-server-{{ .Release.Namespace }}.apps.<cluster-domain>
+{{- end }}
+{{- if .Values.routes.claimsFrontend.enabled }}
+  Claims Frontend: https://{{ include "chatassistant.fullname" . }}-claims-frontend-{{ .Release.Namespace }}.apps.<cluster-domain>
+{{- end }}
+{{- if .Values.routes.adminDashboard.enabled }}
+  Admin Dashboard: https://{{ include "chatassistant.fullname" . }}-admin-dashboard-{{ .Release.Namespace }}.apps.<cluster-domain>
+{{- end }}
+
+Get the actual Route URLs:
+  oc get routes -n {{ .Release.Namespace }}
+
+=====================================================
+  Services
+=====================================================
+  Application:
+    chain-server .............. :{{ .Values.chainServer.port }}
+    catalog-retriever ......... :{{ .Values.catalogRetriever.port }}
+    memory-retriever .......... :{{ .Values.memoryRetriever.port }}
+    rails (guardrails) ........ :{{ .Values.rails.port }}
+    frontend .................. :{{ .Values.frontend.port }}
+    speech-service ............ :{{ .Values.speechService.port }}
+    text-to-sql-agent ......... :{{ .Values.textToSqlAgent.port }}
+    user-management ........... :{{ .Values.userManagement.port }}
+    notification-agent ........ :{{ .Values.notificationAgent.port }}
+
+  NIM GPU:
+    llama ..................... :{{ .Values.llama.servicePort }}
+    embedqa ................... :{{ .Values.embedqa.servicePort }}
+    content-safety ............ :{{ .Values.contentSafety.servicePort }}
+    topic-control ............. :{{ .Values.topicControl.servicePort }}
+    riva-speech (gRPC) ........ :{{ .Values.rivaSpeech.grpcPort }}
+
+  Infrastructure:
+    etcd ...................... :2379
+    minio ..................... :{{ .Values.minio.apiPort }}
+    milvus .................... :{{ .Values.milvus.port }}
+    postgres .................. :{{ .Values.postgres.port }}
+    mongodb ................... :{{ .Values.mongodb.port }}
+
+=====================================================
+  Next Steps
+=====================================================
+
+1. Check pod status:
+   oc get pods -n {{ .Release.Namespace }}
+
+2. View logs:
+   oc logs -f deployment/{{ include "chatassistant.fullname" . }}-chain-server -n {{ .Release.Namespace }}
+
+3. Ensure GPU nodes are available:
+   oc get nodes -l nvidia.com/gpu.present=true

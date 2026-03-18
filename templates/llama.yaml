@@ -1,0 +1,73 @@
+# Llama 3.1 8B Instruct NIM — Deployment + Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-llama
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+    app.kubernetes.io/name: llama
+spec:
+  replicas: {{ .Values.llama.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: llama
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: llama
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        insurance-claim/gpu-workload: "true"
+        insurance-claim/nim-heavy: "true"
+    spec:
+      {{- include "chatassistant.gpuTopologySpread" . | nindent 6 }}
+      {{- include "chatassistant.nimAntiAffinity" (dict "component" "llama" "Release" .Release) | nindent 6 }}
+      securityContext:
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
+      imagePullSecrets:
+        - name: {{ include "chatassistant.imagePullSecretName" . }}
+      containers:
+        - name: llama
+          image: {{ .Values.llama.image }}
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: NGC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.nvidiaSecretName" . }}
+                  key: NGC_API_KEY
+          ports:
+            - containerPort: {{ .Values.llama.port }}
+              name: http
+          volumeMounts:
+            - name: nim-cache
+              mountPath: /opt/nim/.cache
+            - name: dshm
+              mountPath: /dev/shm
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.llama.gpu | quote }}
+      volumes:
+        - name: nim-cache
+          emptyDir: {}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.llama.shmSize }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-llama
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.llama.servicePort }}
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: llama
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -1,0 +1,92 @@
+# OpenShift Routes — replaces nginx reverse proxy
+# Frontend Route
+{{- if .Values.routes.frontend.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-frontend
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.routes.frontend.host }}
+  host: {{ .Values.routes.frontend.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "chatassistant.fullname" . }}-frontend
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
+---
+# Chain Server Route (API)
+{{- if .Values.routes.chainServer.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-chain-server
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.routes.chainServer.host }}
+  host: {{ .Values.routes.chainServer.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "chatassistant.fullname" . }}-chain-server
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
+---
+# Claims Frontend Route
+{{- if .Values.routes.claimsFrontend.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-claims-frontend
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.routes.claimsFrontend.host }}
+  host: {{ .Values.routes.claimsFrontend.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "chatassistant.fullname" . }}-claims-frontend
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
+---
+# Admin Dashboard Route
+{{- if .Values.routes.adminDashboard.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-admin-dashboard
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.routes.adminDashboard.host }}
+  host: {{ .Values.routes.adminDashboard.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "chatassistant.fullname" . }}-admin-dashboard
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
