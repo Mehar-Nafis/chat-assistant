@@ -48,55 +48,55 @@ routes:
 
 # 1. Chain Server
 chainServer:
-  image: chain-server:latest
+  image: lakshmilavanya2001/retail-assistant-chain-server:latest
   replicas: 1
   port: 8009
 
 # 2. Catalog Retriever
 catalogRetriever:
-  image: catalog-retriever:latest
+  image: lakshmilavanya2001/retail-assistant-catalog-retriever:latest
   replicas: 1
   port: 8010
 
 # 3. Memory Retriever
 memoryRetriever:
-  image: memory-retriever:latest
+  image: lakshmilavanya2001/retail-assistant-memory-retriever:latest
   replicas: 1
   port: 8011
 
 # 4. Guardrails (Rails)
 rails:
-  image: rails:latest
+  image: lakshmilavanya2001/retail-assistant-rails:latest
   replicas: 1
   port: 8012
 
 # 5. Frontend (shopping UI)
 frontend:
-  image: shopping-frontend:latest
+  image: lakshmilavanya2001/retail-assistant-frontend:latest
   replicas: 1
   port: 3000
 
 # 6. Speech Service
 speechService:
-  image: speech-service:latest
+  image: lakshmilavanya2001/retail-assistant-speech-service:latest
   replicas: 1
   port: 8013
 
 # 7. Text-to-SQL Agent
 textToSqlAgent:
-  image: text-to-sql-agent:latest
+  image: lakshmilavanya2001/retail-assistant-text-to-sql-agent:latest
   replicas: 1
   port: 8017
 
 # 8. User Management
 userManagement:
-  image: user-management:latest
+  image: lakshmilavanya2001/retail-assistant-user-management:latest
   replicas: 1
   port: 8014
 
 # 9. Notification Agent
 notificationAgent:
-  image: notification-agent:latest
+  image: lakshmilavanya2001/retail-assistant-notification-agent:latest
   replicas: 1
   port: 8015
 
