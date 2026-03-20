@@ -79,8 +79,7 @@ spec:
         - name: sqlite-data
           emptyDir: {}
         - name: shared-data
-          persistentVolumeClaim:
-            claimName: {{ include "chatassistant.fullname" . }}-shared
+          emptyDir: {}
         - name: service-configs
           configMap:
             name: {{ include "chatassistant.fullname" . }}-service-configs

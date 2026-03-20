@@ -22,8 +22,9 @@ data:
     image_model_name: "nvidia/nvclip"
 
     # Database connectivity
-    db_host: "{{ include "chatassistant.fullname" . }}-postgres"
-    db_port: "{{ .Values.postgres.port }}"
+    # Milvus connection disguised as db_*
+    db_host: "{{ include "chatassistant.fullname" . }}-milvus"
+    db_port: "{{ .Values.milvus.port }}"
     db_user: {{ .Values.postgres.user }}
     db_password: {{ .Values.postgres.password }}
     db_name: {{ .Values.postgres.database }}
