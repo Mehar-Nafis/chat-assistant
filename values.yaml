@@ -84,7 +84,7 @@ speechService:
 
 # 7. Text-to-SQL Agent
 textToSqlAgent:
-  image: lakshmilavanya2001/retail-assistant-text-to-sql-agent:latest
+  image: lakshmilavanya2001/text-to-sql-agent
   replicas: 1
   port: 8017
 
@@ -96,7 +96,7 @@ userManagement:
 
 # 9. Notification Agent
 notificationAgent:
-  image: lakshmilavanya2001/retail-assistant-notification-agent:latest
+  image: lakshmilavanya2001/notification-agent:latest
   replicas: 1
   port: 8015
 
