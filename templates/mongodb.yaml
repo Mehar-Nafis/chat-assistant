@@ -36,13 +36,19 @@ spec:
         app.kubernetes.io/name: mongodb
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- include "chatassistant.dockerHubImagePullSecrets" . | nindent 6 }}
       securityContext:
-        {{- include "chatassistant.securityContext" . | nindent 8 }}
+        runAsUser: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: mongodb
           image: {{ .Values.mongodb.image }}
           securityContext:
-            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ "ALL" ]
           env:
             - name: MONGO_INITDB_DATABASE
               value: {{ .Values.mongodb.database | quote }}
@@ -54,14 +60,15 @@ spec:
               mountPath: /data/db
           livenessProbe:
             exec:
-              command: [ "mongosh", "--eval", "db.adminCommand('ping')" ]
+              command: [ "mongosh", "--eval", "db.adminCommand('ping')", "--quiet" ]
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
+            failureThreshold: 6
           readinessProbe:
             exec:
-              command: [ "mongosh", "--eval", "db.adminCommand('ping')" ]
-            initialDelaySeconds: 10
+              command: [ "mongosh", "--eval", "db.adminCommand('ping')", "--quiet" ]
+            initialDelaySeconds: 15
             periodSeconds: 10
             timeoutSeconds: 5
   volumeClaimTemplates:
