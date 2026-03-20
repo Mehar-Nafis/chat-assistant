@@ -27,6 +27,7 @@ spec:
       containers:
         - name: riva-speech
           image: {{ .Values.rivaSpeech.image }}
+          command: ["start-riva"]
           securityContext:
             {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
           env:
