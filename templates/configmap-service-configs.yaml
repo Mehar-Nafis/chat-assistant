@@ -37,6 +37,7 @@ data:
     # Retrieval settings
     top_k: 5
     score_threshold: 0.0
+    sim_threshold: 0.0
 
     # Server
     server_host: "0.0.0.0"
@@ -57,13 +58,6 @@ data:
     image_embed_model: "nvidia/nvclip"
     image_model_name: "nvidia/nvclip"
 
-    # Database connectivity
-    db_host: "{{ include "chatassistant.fullname" . }}-postgres"
-    db_port: {{ .Values.postgres.port }}
-    db_user: {{ .Values.postgres.user }}
-    db_password: {{ .Values.postgres.password }}
-    db_name: {{ .Values.postgres.database }}
-
     # Milvus vector DB
     milvus_host: "{{ include "chatassistant.fullname" . }}-milvus"
     milvus_port: {{ .Values.milvus.port }}
@@ -73,6 +67,7 @@ data:
     # Retrieval settings
     top_k: 3
     score_threshold: 0.0
+    sim_threshold: 0.0
 
     # Server
     server_host: "0.0.0.0"
