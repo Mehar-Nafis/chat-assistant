@@ -28,13 +28,19 @@ spec:
                   app.kubernetes.io/instance: {{ .Release.Name }}
               topologyKey: kubernetes.io/hostname
       securityContext:
-        {{- include "chatassistant.securityContext" . | nindent 8 }}
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: catalog-retriever
           image: {{ .Values.catalogRetriever.image }}
           imagePullPolicy: IfNotPresent
           securityContext:
-            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: EMBED_API_KEY
               valueFrom:

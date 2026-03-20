@@ -28,13 +28,44 @@ spec:
                   app.kubernetes.io/instance: {{ .Release.Name }}
               topologyKey: kubernetes.io/hostname
       securityContext:
-        {{- include "chatassistant.securityContext" . | nindent 8 }}
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      # Init container: create required directories on the shared PVC
+      # The app tries to create a SQLite DB file inside /app/shared/memory_retriever/
+      # and the PVC starts empty, so the directory must be pre-created.
+      initContainers:
+        - name: init-dirs
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              mkdir -p /app/shared/memory_retriever
+              mkdir -p /app/shared/catalog_retriever
+              mkdir -p /app/shared/rails
+              mkdir -p /app/shared/data
+              chmod -R 777 /app/shared
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: false
+            runAsUser: 0
+            capabilities:
+              drop: ["ALL"]
+              add: ["CHOWN", "DAC_OVERRIDE"]
+          volumeMounts:
+            - name: shared-data
+              mountPath: /app/shared
       containers:
         - name: memory-retriever
           image: {{ .Values.memoryRetriever.image }}
           imagePullPolicy: IfNotPresent
           securityContext:
-            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: MILVUS_HOST
               value: "{{ include "chatassistant.fullname" . }}-milvus"

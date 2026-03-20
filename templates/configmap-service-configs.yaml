@@ -10,85 +10,64 @@ metadata:
 data:
   catalog_retriever_config.yaml: |
     # Catalog Retriever — base configuration
-    milvus:
-      host: "{{ include "chatassistant.fullname" . }}-milvus"
-      port: {{ .Values.milvus.port }}
-      collection_name: "product_catalog"
-      dim: 1024
+    # Embedding service (flat keys matching data["key"] access in main.py)
+    text_embed_host: "{{ include "chatassistant.fullname" . }}-embedqa"
+    text_embed_port: {{ .Values.embedqa.servicePort }}
+    text_embed_model: "nvidia/nv-embedqa-e5-v5"
 
-    embedding:
-      model: "nvidia/nv-embedqa-e5-v5"
-      base_url: "http://{{ include "chatassistant.fullname" . }}-embedqa:{{ .Values.embedqa.servicePort }}/v1"
-      dimension: 1024
-      batch_size: 8
+    # Milvus vector DB
+    milvus_host: "{{ include "chatassistant.fullname" . }}-milvus"
+    milvus_port: {{ .Values.milvus.port }}
+    collection_name: "product_catalog"
+    vector_dim: 1024
 
-    retrieval:
-      top_k: 5
-      score_threshold: 0.0
-      rerank: false
+    # Retrieval settings
+    top_k: 5
+    score_threshold: 0.0
 
-    server:
-      host: "0.0.0.0"
-      port: {{ .Values.catalogRetriever.port }}
+    # Server
+    server_host: "0.0.0.0"
+    server_port: {{ .Values.catalogRetriever.port }}
 
-    logging:
-      level: "INFO"
+    log_level: "INFO"
 
   memory_retriever_config.yaml: |
     # Memory Retriever — base configuration
-    milvus:
-      host: "{{ include "chatassistant.fullname" . }}-milvus"
-      port: {{ .Values.milvus.port }}
-      collection_name: "conversation_memory"
-      dim: 1024
+    # Embedding service (flat keys matching data["key"] access in main.py)
+    text_embed_host: "{{ include "chatassistant.fullname" . }}-embedqa"
+    text_embed_port: {{ .Values.embedqa.servicePort }}
+    text_embed_model: "nvidia/nv-embedqa-e5-v5"
 
-    embedding:
-      model: "nvidia/nv-embedqa-e5-v5"
-      base_url: "http://{{ include "chatassistant.fullname" . }}-embedqa:{{ .Values.embedqa.servicePort }}/v1"
-      dimension: 1024
-      batch_size: 8
+    # Milvus vector DB
+    milvus_host: "{{ include "chatassistant.fullname" . }}-milvus"
+    milvus_port: {{ .Values.milvus.port }}
+    collection_name: "conversation_memory"
+    vector_dim: 1024
 
-    retrieval:
-      top_k: 3
-      score_threshold: 0.0
-      rerank: false
+    # Retrieval settings
+    top_k: 3
+    score_threshold: 0.0
 
-    server:
-      host: "0.0.0.0"
-      port: {{ .Values.memoryRetriever.port }}
+    # Server
+    server_host: "0.0.0.0"
+    server_port: {{ .Values.memoryRetriever.port }}
 
-    logging:
-      level: "INFO"
+    log_level: "INFO"
 
   rails_config.yaml: |
-    # NeMo Guardrails — base configuration
-    models:
-      - type: main
-        engine: nim
-        model: meta/llama-3.1-8b-instruct
-        base_url: "http://{{ include "chatassistant.fullname" . }}-llama:{{ .Values.llama.servicePort }}/v1"
-        parameters:
-          temperature: 0.2
-          max_tokens: 1024
+    # Guardrails (Rails) — base configuration
+    # LLM service (flat keys)
+    llm_host: "{{ include "chatassistant.fullname" . }}-llama"
+    llm_port: {{ .Values.llama.servicePort }}
+    llm_model: "meta/llama-3.1-8b-instruct"
 
-    rails:
-      input:
-        flows:
-          - check input
-      output:
-        flows:
-          - check output
+    # Guardrails engine
+    engine: "nim"
+    temperature: 0.2
+    max_tokens: 1024
 
-    instructions:
-      - type: general
-        content: |
-          You are a helpful retail shopping assistant. You help users find products,
-          answer questions about items, and assist with order-related queries.
-          Stay on topic and do not discuss unrelated subjects.
+    # Server
+    server_host: "0.0.0.0"
+    server_port: {{ .Values.rails.port }}
 
-    server:
-      host: "0.0.0.0"
-      port: {{ .Values.rails.port }}
-
-    logging:
-      level: "INFO"
+    log_level: "INFO"
