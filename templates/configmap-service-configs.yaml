@@ -116,7 +116,7 @@ data:
     rails_port: "http://{{ include "chatassistant.fullname" . }}-rails:{{ .Values.rails.port }}"
     routing_prompt: "You are an intelligent routing agent designed to classify customer inquiries into exactly one of the provided categories. Respond ONLY with the optimal category name."
     chatter_prompt: "You are a helpful and professional customer service assistant. Using the retrieved context, answer the user's inquiry clearly and concisely."
-    categories: ["insurance", "claims", "billing", "general_inquiry"]
+    categories: ["insurance", "claims", "billing", "general inquiry"]
     agent_choices: ["retrieval_agent", "chitchat_agent"]
     memory_length: 5
     top_k_retrieve: 3
