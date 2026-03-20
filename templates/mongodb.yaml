@@ -38,10 +38,7 @@ spec:
     spec:
       {{- include "chatassistant.dockerHubImagePullSecrets" . | nindent 6 }}
       securityContext:
-        runAsUser: 999
-        fsGroup: 999
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "chatassistant.securityContext" . | nindent 8 }}
       containers:
         - name: mongodb
           image: {{ .Values.mongodb.image }}
