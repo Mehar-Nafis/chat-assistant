@@ -18,6 +18,15 @@ ngcImagePull:
   password: ""
   email: ""
 
+# -- Docker Hub pull secret (for lakshmilavanya2001/* images)
+# Set enabled: true and fill in your Docker Hub username/password to bypass rate limits.
+dockerHubImagePull:
+  enabled: false
+  registry: docker.io
+  username: ""
+  password: ""
+  email: ""
+
 # -- Naming
 nameOverride: "insurance-claim"
 fullnameOverride: ""

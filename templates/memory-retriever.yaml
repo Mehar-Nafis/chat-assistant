@@ -18,6 +18,7 @@ spec:
         app.kubernetes.io/name: memory-retriever
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- include "chatassistant.dockerHubImagePullSecrets" . | nindent 6 }}
       affinity:
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -31,6 +32,7 @@ spec:
       containers:
         - name: memory-retriever
           image: {{ .Values.memoryRetriever.image }}
+          imagePullPolicy: IfNotPresent
           securityContext:
             {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
           env:

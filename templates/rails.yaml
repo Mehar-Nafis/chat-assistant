@@ -18,6 +18,7 @@ spec:
         app.kubernetes.io/name: rails
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      {{- include "chatassistant.dockerHubImagePullSecrets" . | nindent 6 }}
       affinity:
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -31,6 +32,7 @@ spec:
       containers:
         - name: rails
           image: {{ .Values.rails.image }}
+          imagePullPolicy: IfNotPresent
           securityContext:
             {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
           env:

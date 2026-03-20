@@ -48,6 +48,24 @@ NGC image pull secret name
 {{- end }}
 
 {{/*
+Docker Hub pull secret name
+*/}}
+{{- define "chatassistant.dockerHubPullSecretName" -}}
+{{ include "chatassistant.fullname" . }}-dockerhub-pull
+{{- end }}
+
+{{/*
+imagePullSecrets block for Docker Hub images (lakshmilavanya2001).
+Renders nothing if dockerHubImagePull.enabled is false.
+*/}}
+{{- define "chatassistant.dockerHubImagePullSecrets" -}}
+{{- if .Values.dockerHubImagePull.enabled }}
+imagePullSecrets:
+  - name: {{ include "chatassistant.dockerHubPullSecretName" . }}
+{{- end }}
+{{- end }}
+
+{{/*
 NVIDIA API secret name
 */}}
 {{- define "chatassistant.nvidiaSecretName" -}}
