@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: claims-backend
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3200
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: admin-dashboard
+    app.kubernetes.io/instance: {{ .Release.Name }}
