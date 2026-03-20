@@ -109,11 +109,11 @@ data:
 
   chain_server_config.yaml: |
     # Chain Server — base configuration
-    llm_port: "{{ .Values.llama.servicePort }}"
+    llm_port: "http://{{ include "chatassistant.fullname" . }}-llama:{{ .Values.llama.servicePort }}"
     llm_name: "meta/llama-3.1-8b-instruct"
-    retriever_port: "{{ .Values.catalogRetriever.port }}"
-    memory_port: "{{ .Values.memoryRetriever.port }}"
-    rails_port: "{{ .Values.rails.port }}"
+    retriever_port: "http://{{ include "chatassistant.fullname" . }}-catalog-retriever:{{ .Values.catalogRetriever.port }}"
+    memory_port: "http://{{ include "chatassistant.fullname" . }}-memory-retriever:{{ .Values.memoryRetriever.port }}"
+    rails_port: "http://{{ include "chatassistant.fullname" . }}-rails:{{ .Values.rails.port }}"
     routing_prompt: "You are an intelligent routing agent designed to classify customer inquiries into exactly one of the provided categories. Respond ONLY with the optimal category name."
     chatter_prompt: "You are a helpful and professional customer service assistant. Using the retrieved context, answer the user's inquiry clearly and concisely."
     categories: ["insurance", "claims", "billing", "general_inquiry"]
