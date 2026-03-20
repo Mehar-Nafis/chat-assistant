@@ -43,7 +43,6 @@ spec:
               mkdir -p /app/shared/catalog_retriever
               mkdir -p /app/shared/rails
               mkdir -p /app/shared/data
-              chmod -R 777 /app/shared
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
