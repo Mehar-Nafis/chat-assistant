@@ -34,6 +34,9 @@ fullnameOverride: ""
 # -- OpenShift namespace
 namespace: ""
 
+# -- OpenShift apps cluster domain (used to build Route hostnames)
+clusterDomain: "apps.apjcaipod.dcloud.cisco.com"
+
 # ============================================================
 # OpenShift Routes (replaces nginx)
 # ============================================================

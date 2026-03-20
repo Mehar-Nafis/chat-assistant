@@ -31,9 +31,7 @@ metadata:
   labels:
     {{- include "chatassistant.labels" . | nindent 4 }}
 spec:
-  {{- if .Values.routes.frontend.host }}
-  host: {{ .Values.routes.frontend.host }}
-  {{- end }}
+  host: "{{ include "chatassistant.fullname" . }}-frontend-{{ .Release.Namespace }}.{{ .Values.clusterDomain }}"
   path: /api
   to:
     kind: Service
