@@ -27,7 +27,7 @@ spec:
             runAsUser: 0
           env:
             - name: VITE_BACKEND_URL
-              value: "http://{{ include "chatassistant.fullname" . }}-chain-server:{{ .Values.chainServer.port }}"
+              value: "https://{{ include "chatassistant.fullname" . }}-chain-server-chat-assistant.apps.apjcaipod.dcloud.cisco.com"
           ports:
             - containerPort: {{ .Values.claimsFrontend.port }}
               name: http

@@ -26,6 +26,9 @@ spec:
           image: {{ .Values.frontend.image }}
           securityContext:
             {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          env:
+            - name: VITE_BACKEND_URL
+              value: "https://{{ include "chatassistant.fullname" . }}-chain-server-chat-assistant.apps.apjcaipod.dcloud.cisco.com"
           ports:
             - containerPort: {{ .Values.frontend.port }}
               name: http
