@@ -20,6 +20,14 @@ spec:
         insurance-claim/gpu-workload: "true"
     spec:
       {{- include "chatassistant.gpuTopologySpread" . | nindent 6 }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: llama
+                  app.kubernetes.io/instance: {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
       securityContext:
         {{- include "chatassistant.securityContext" . | nindent 8 }}
       imagePullSecrets:
