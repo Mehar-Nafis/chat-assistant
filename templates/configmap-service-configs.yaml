@@ -1,0 +1,94 @@
+# Service Config Files — ConfigMap
+# Provides the base config.yaml files that catalog-retriever, memory-retriever,
+# and rails containers expect at /app/shared/configs/<service>/config.yaml.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-service-configs
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+data:
+  catalog_retriever_config.yaml: |
+    # Catalog Retriever — base configuration
+    milvus:
+      host: "{{ include "chatassistant.fullname" . }}-milvus"
+      port: {{ .Values.milvus.port }}
+      collection_name: "product_catalog"
+      dim: 1024
+
+    embedding:
+      model: "nvidia/nv-embedqa-e5-v5"
+      base_url: "http://{{ include "chatassistant.fullname" . }}-embedqa:{{ .Values.embedqa.servicePort }}/v1"
+      dimension: 1024
+      batch_size: 8
+
+    retrieval:
+      top_k: 5
+      score_threshold: 0.0
+      rerank: false
+
+    server:
+      host: "0.0.0.0"
+      port: {{ .Values.catalogRetriever.port }}
+
+    logging:
+      level: "INFO"
+
+  memory_retriever_config.yaml: |
+    # Memory Retriever — base configuration
+    milvus:
+      host: "{{ include "chatassistant.fullname" . }}-milvus"
+      port: {{ .Values.milvus.port }}
+      collection_name: "conversation_memory"
+      dim: 1024
+
+    embedding:
+      model: "nvidia/nv-embedqa-e5-v5"
+      base_url: "http://{{ include "chatassistant.fullname" . }}-embedqa:{{ .Values.embedqa.servicePort }}/v1"
+      dimension: 1024
+      batch_size: 8
+
+    retrieval:
+      top_k: 3
+      score_threshold: 0.0
+      rerank: false
+
+    server:
+      host: "0.0.0.0"
+      port: {{ .Values.memoryRetriever.port }}
+
+    logging:
+      level: "INFO"
+
+  rails_config.yaml: |
+    # NeMo Guardrails — base configuration
+    models:
+      - type: main
+        engine: nim
+        model: meta/llama-3.1-8b-instruct
+        base_url: "http://{{ include "chatassistant.fullname" . }}-llama:{{ .Values.llama.servicePort }}/v1"
+        parameters:
+          temperature: 0.2
+          max_tokens: 1024
+
+    rails:
+      input:
+        flows:
+          - check input
+      output:
+        flows:
+          - check output
+
+    instructions:
+      - type: general
+        content: |
+          You are a helpful retail shopping assistant. You help users find products,
+          answer questions about items, and assist with order-related queries.
+          Stay on topic and do not discuss unrelated subjects.
+
+    server:
+      host: "0.0.0.0"
+      port: {{ .Values.rails.port }}
+
+    logging:
+      level: "INFO"

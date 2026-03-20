@@ -46,10 +46,17 @@ spec:
           volumeMounts:
             - name: shared-data
               mountPath: /app/shared
+            - name: service-configs
+              mountPath: /app/shared/configs/memory_retriever/config.yaml
+              subPath: memory_retriever_config.yaml
+              readOnly: true
       volumes:
         - name: shared-data
           persistentVolumeClaim:
             claimName: {{ include "chatassistant.fullname" . }}-shared
+        - name: service-configs
+          configMap:
+            name: {{ include "chatassistant.fullname" . }}-service-configs
 
 ---
 apiVersion: v1
