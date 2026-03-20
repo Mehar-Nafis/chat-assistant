@@ -109,6 +109,16 @@ data:
 
   chain_server_config.yaml: |
     # Chain Server — base configuration
-    server_host: "0.0.0.0"
-    server_port: {{ .Values.chainServer.port }}
-    log_level: "INFO"
+    llm_port: {{ .Values.llama.servicePort }}
+    llm_name: "meta/llama-3.1-8b-instruct"
+    retriever_port: {{ .Values.catalogRetriever.port }}
+    memory_port: {{ .Values.memoryRetriever.port }}
+    rails_port: {{ .Values.rails.port }}
+    routing_prompt: "You are an intelligent routing agent designed to classify customer inquiries into exactly one of the provided categories. Respond ONLY with the optimal category name."
+    chatter_prompt: "You are a helpful and professional customer service assistant. Using the retrieved context, answer the user's inquiry clearly and concisely."
+    categories: ["insurance", "claims", "billing", "general_inquiry"]
+    agent_choices: ["retrieval_agent", "chitchat_agent"]
+    memory_length: 5
+    top_k_retrieve: 3
+    multimodal: false
+    unsafe_message: "I am unable to assist with that request, as it violates our content safety policies."
