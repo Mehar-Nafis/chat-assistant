@@ -31,11 +31,10 @@ spec:
             {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
           env:
             - name: NGC_API_KEY
-              value: {{ .Values.nvidiaApiKey | quote }}
-              # valueFrom:
-              #   secretKeyRef:
-              #     name: {{ include "chatassistant.nvidiaSecretName" . }}
-              #     key: NGC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.nvidiaSecretName" . }}
+                  key: NGC_API_KEY
           ports:
             - containerPort: {{ .Values.rivaSpeech.grpcPort }}
               name: grpc
