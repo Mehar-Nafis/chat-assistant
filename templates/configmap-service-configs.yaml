@@ -24,7 +24,7 @@ data:
     # Database connectivity
     # Milvus connection disguised as db_*
     db_host: "{{ include "chatassistant.fullname" . }}-milvus"
-    db_port: "{{ .Values.milvus.port }}"
+    db_port: "http://{{ include "chatassistant.fullname" . }}-milvus:{{ .Values.milvus.port }}"
     db_user: {{ .Values.postgres.user }}
     db_password: {{ .Values.postgres.password }}
     db_name: {{ .Values.postgres.database }}
@@ -60,6 +60,10 @@ data:
     image_embed_port: {{ .Values.nvclip.servicePort }}
     image_embed_model: "nvidia/nvclip"
     image_model_name: "nvidia/nvclip"
+
+    # Milvus connection disguised as db_*
+    db_host: "{{ include "chatassistant.fullname" . }}-milvus"
+    db_port: "http://{{ include "chatassistant.fullname" . }}-milvus:{{ .Values.milvus.port }}"
 
     # Milvus vector DB
     milvus_host: "{{ include "chatassistant.fullname" . }}-milvus"

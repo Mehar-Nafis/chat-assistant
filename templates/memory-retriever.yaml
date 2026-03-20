@@ -53,12 +53,25 @@ spec:
       containers:
         - name: memory-retriever
           image: {{ .Values.memoryRetriever.image }}
+          workingDir: /app/shared/memory_retriever
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
           env:
+            - name: PYTHONPATH
+              value: "/app"
+            - name: DB_PATH
+              value: "/tmp/memory.db"
+            - name: SQLITE_PATH
+              value: "/tmp/memory.db"
+            - name: DATABASE_URL
+              value: "sqlite:////tmp/memory.db"
+            - name: DB_URL
+              value: "sqlite:////tmp/memory.db"
+            - name: SQLALCHEMY_DATABASE_URI
+              value: "sqlite:////tmp/memory.db"
             - name: MILVUS_HOST
               value: "{{ include "chatassistant.fullname" . }}-milvus"
             - name: MILVUS_PORT
