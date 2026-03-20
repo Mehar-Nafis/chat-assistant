@@ -106,3 +106,9 @@ data:
     server_port: {{ .Values.rails.port }}
 
     log_level: "INFO"
+
+  chain_server_config.yaml: |
+    # Chain Server — base configuration
+    server_host: "0.0.0.0"
+    server_port: {{ .Values.chainServer.port }}
+    log_level: "INFO"

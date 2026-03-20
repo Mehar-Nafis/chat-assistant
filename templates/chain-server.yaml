@@ -47,6 +47,16 @@ spec:
           ports:
             - containerPort: {{ .Values.chainServer.port }}
               name: http
+          volumeMounts:
+            - name: chain-server-config
+              mountPath: /app/shared/configs/chain_server
+      volumes:
+        - name: chain-server-config
+          configMap:
+            name: {{ include "chatassistant.fullname" . }}-service-configs
+            items:
+              - key: chain_server_config.yaml
+                path: config.yaml
 
 ---
 apiVersion: v1
