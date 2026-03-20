@@ -25,12 +25,16 @@ spec:
           image: {{ .Values.claimsFrontend.image }}
           securityContext:
             runAsUser: 0
-          env:
-            - name: VITE_BACKEND_URL
-              value: "https://{{ include "chatassistant.fullname" . }}-chain-server-chat-assistant.apps.apjcaipod.dcloud.cisco.com"
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
           ports:
             - containerPort: {{ .Values.claimsFrontend.port }}
               name: http
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "chatassistant.fullname" . }}-nginx-frontend
 ---
 apiVersion: v1
 kind: Service

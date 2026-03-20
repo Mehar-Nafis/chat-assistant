@@ -1,0 +1,35 @@
+# Nginx config for claims-frontend: serves the SPA and proxies /api/ → chain-server
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-nginx-frontend
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+data:
+  default.conf: |
+    server {
+        listen {{ .Values.claimsFrontend.port }};
+        server_name _;
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Proxy all /api/ requests to the chain-server backend
+        location /api/ {
+            proxy_pass http://{{ include "chatassistant.fullname" . }}-chain-server:{{ .Values.chainServer.port }}/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Connection '';
+            # Support SSE / streaming responses
+            proxy_read_timeout 300s;
+            proxy_buffering off;
+            chunked_transfer_encoding on;
+        }
+
+        # SPA catch-all
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+    }
