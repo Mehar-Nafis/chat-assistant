@@ -125,7 +125,7 @@ claimAgent:
 
 # 11. Llama 3.1 8B Instruct
 llama:
-  image: nvcr.io/nim/meta/llama-3.1-8b-instruct:1.2.2
+  image: nvcr.io/nim/nvidia/nemo/llama-3_1-8b-instruct-nemo:2.0
   replicas: 1
   port: 8000
   servicePort: 8000
