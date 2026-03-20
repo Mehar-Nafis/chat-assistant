@@ -19,12 +19,12 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       securityContext:
-        {{- include "chatassistant.securityContext" . | nindent 8 }}
+        runAsUser: 0
       containers:
         - name: claims-frontend
           image: {{ .Values.claimsFrontend.image }}
           securityContext:
-            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+            runAsUser: 0
           env:
             - name: VITE_BACKEND_URL
               value: "http://{{ include "chatassistant.fullname" . }}-chain-server:{{ .Values.chainServer.port }}"
