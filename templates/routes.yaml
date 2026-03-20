@@ -22,6 +22,30 @@ spec:
     insecureEdgeTerminationPolicy: Redirect
 {{- end }}
 ---
+# Frontend /api/ Route — routes /api/* on the frontend hostname to the chain-server
+{{- if .Values.routes.frontend.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "chatassistant.fullname" . }}-frontend-api
+  labels:
+    {{- include "chatassistant.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.routes.frontend.host }}
+  host: {{ .Values.routes.frontend.host }}
+  {{- end }}
+  path: /api
+  to:
+    kind: Service
+    name: {{ include "chatassistant.fullname" . }}-chain-server
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
+---
 # Chain Server Route (API)
 {{- if .Values.routes.chainServer.enabled }}
 apiVersion: route.openshift.io/v1
