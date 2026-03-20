@@ -94,7 +94,7 @@ data:
     # LLM service (flat keys)
     llm_host: "{{ include "chatassistant.fullname" . }}-llama"
     llm_port: {{ .Values.llama.servicePort }}
-    llm_model: "nvidia/nemo/llama-3_1-8b-instruct-nemo"
+    llm_model: "meta/llama-3_1-8b-instruct"
 
     # Guardrails engine
     engine: "nim"
@@ -110,7 +110,7 @@ data:
   chain_server_config.yaml: |
     # Chain Server — base configuration
     llm_port: "http://{{ include "chatassistant.fullname" . }}-llama:{{ .Values.llama.servicePort }}"
-    llm_name: "nvidia/nemo/llama-3_1-8b-instruct-nemo"
+    llm_name: "meta/llama-3_1-8b-instruct"
     retriever_port: "http://{{ include "chatassistant.fullname" . }}-catalog-retriever:{{ .Values.catalogRetriever.port }}"
     memory_port: "http://{{ include "chatassistant.fullname" . }}-memory-retriever:{{ .Values.memoryRetriever.port }}"
     rails_port: "http://{{ include "chatassistant.fullname" . }}-rails:{{ .Values.rails.port }}"
