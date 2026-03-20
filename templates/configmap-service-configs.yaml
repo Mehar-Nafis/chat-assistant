@@ -32,6 +32,8 @@ data:
     milvus_host: "{{ include "chatassistant.fullname" . }}-milvus"
     milvus_port: {{ .Values.milvus.port }}
     collection_name: "product_catalog"
+    text_collection: "product_catalog"
+    image_collection: "product_catalog"
     vector_dim: 1024
 
     # Retrieval settings
@@ -62,6 +64,13 @@ data:
     milvus_host: "{{ include "chatassistant.fullname" . }}-milvus"
     milvus_port: {{ .Values.milvus.port }}
     collection_name: "conversation_memory"
+    text_collection: "conversation_memory"
+    image_collection: "conversation_memory"
+    
+    db_path: "/app/shared/memory_retriever/memory.db"
+    sqlite_path: "/app/shared/memory_retriever/memory.db"
+    db_url: "sqlite:////app/shared/memory_retriever/memory.db"
+    database_url: "sqlite:////app/shared/memory_retriever/memory.db"
     vector_dim: 1024
 
     # Retrieval settings
