@@ -42,6 +42,10 @@ data:
     text_embed_port: {{ .Values.embedqa.servicePort }}
     text_embed_model: "nvidia/nv-embedqa-e5-v5"
 
+    image_embed_host: "{{ include "chatassistant.fullname" . }}-nvclip"
+    image_embed_port: {{ .Values.nvclip.servicePort }}
+    image_embed_model: "nvidia/nvclip"
+
     # Milvus vector DB
     milvus_host: "{{ include "chatassistant.fullname" . }}-milvus"
     milvus_port: {{ .Values.milvus.port }}
