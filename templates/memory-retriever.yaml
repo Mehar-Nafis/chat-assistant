@@ -41,13 +41,7 @@ spec:
           ports:
             - containerPort: {{ .Values.memoryRetriever.port }}
               name: http
-          volumeMounts:
-            - name: shared
-              mountPath: /app/shared
-      volumes:
-        - name: shared
-          persistentVolumeClaim:
-            claimName: {{ include "chatassistant.fullname" . }}-shared
+
 ---
 apiVersion: v1
 kind: Service

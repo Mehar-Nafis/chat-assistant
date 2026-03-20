@@ -24,6 +24,41 @@ spec:
         {{- include "chatassistant.securityContext" . | nindent 8 }}
       imagePullSecrets:
         - name: {{ include "chatassistant.imagePullSecretName" . }}
+      initContainers:
+        - name: riva-model-init
+          image: "{{ .Values.rivaSpeech.image }}-servicemaker"
+          securityContext:
+            {{- include "chatassistant.containerSecurityContext" . | nindent 12 }}
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              if [ ! -d "/data/models" ] || [ -z "$(ls -A /data/models 2>/dev/null)" ]; then
+                echo "Downloading default English ASR RMIR model..."
+                mkdir -p /data/rmir
+                ngc registry model download-version "nvidia/riva/rmir_asr_conformer_en_us_ofst:2.14.0" --dest /data/rmir
+                
+                echo "Compiling model with riva-deploy..."
+                mkdir -p /data/models
+                for f in $(find /data/rmir -name '*.rmir'); do
+                  riva-deploy -f $f /data/models/
+                done
+                
+                echo "Model initialization complete."
+              else
+                echo "Models already found in /data/models. Skipping initialization."
+              fi
+          env:
+            - name: NGC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "chatassistant.nvidiaSecretName" . }}
+                  key: NGC_API_KEY
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.rivaSpeech.gpu | quote }}
+          volumeMounts:
+            - name: riva-data
+              mountPath: /data
       containers:
         - name: riva-speech
           image: {{ .Values.rivaSpeech.image }}

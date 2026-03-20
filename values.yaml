@@ -113,7 +113,7 @@ claimAgent:
 
 # 11. Llama 3.1 8B Instruct
 llama:
-  image: nvcr.io/nim/meta/llama-3.1-8b-instruct
+  image: nvcr.io/nim/meta/llama-3.1-8b-instruct:1.0.0
   replicas: 1
   port: 8000
   servicePort: 8000
@@ -216,7 +216,7 @@ postgres:
 
 # 21. MongoDB
 mongodb:
-  image: meharnafisdockerhub/mongo:latest
+  image: mongo:latest
   replicas: 1
   port: 27017
   pvcSize: 10Gi
