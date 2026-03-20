@@ -8,6 +8,7 @@ metadata:
 data:
   default.conf: |
     server {
+        listen {{ .Values.frontend.port }};
         listen {{ .Values.claimsFrontend.port }};
         server_name _;
         root /usr/share/nginx/html;
