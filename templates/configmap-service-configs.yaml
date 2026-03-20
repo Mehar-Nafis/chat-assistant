@@ -114,10 +114,10 @@ data:
     retriever_port: "http://{{ include "chatassistant.fullname" . }}-catalog-retriever:{{ .Values.catalogRetriever.port }}"
     memory_port: "http://{{ include "chatassistant.fullname" . }}-memory-retriever:{{ .Values.memoryRetriever.port }}"
     rails_port: "http://{{ include "chatassistant.fullname" . }}-rails:{{ .Values.rails.port }}"
-    routing_prompt: "You are an intelligent routing agent designed to classify customer inquiries into exactly one of the provided categories. Respond ONLY with the optimal category name."
+    routing_prompt: "You are an intelligent routing agent designed to classify customer inquiries. If the user asks for factual information, policies, or specific insurance data, respond exactly with 'retriever'. If the user is just saying hello, making small talk, or asking a general unspecific question, respond exactly with 'chatter'. Respond ONLY with the exact word 'retriever' or 'chatter'."
     chatter_prompt: "You are a helpful and professional customer service assistant. Using the retrieved context, answer the user's inquiry clearly and concisely."
-    categories: ["insurance", "claims", "billing", "general inquiry"]
-    agent_choices: ["insurance", "claims", "billing", "general inquiry", "retrieval_agent", "chitchat_agent", "chatter"]
+    categories: ["retriever", "chatter"]
+    agent_choices: ["retriever", "chatter"]
     memory_length: 5
     top_k_retrieve: 3
     multimodal: false
