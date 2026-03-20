@@ -18,6 +18,14 @@ spec:
         app.kubernetes.io/name: catalog-retriever
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: frontend
+                  app.kubernetes.io/instance: {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
       securityContext:
         {{- include "chatassistant.securityContext" . | nindent 8 }}
       containers:

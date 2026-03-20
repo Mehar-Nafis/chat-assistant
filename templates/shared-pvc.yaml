@@ -6,7 +6,8 @@ metadata:
   labels:
     {{- include "chatassistant.labels" . | nindent 4 }}
 spec:
-  accessModes: [ ReadWriteMany ]
+  accessModes: [ ReadWriteOnce ]
+  storageClassName: local-fs
   resources:
     requests:
       storage: {{ .Values.sharedVolume.pvcSize }}

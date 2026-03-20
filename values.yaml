@@ -216,7 +216,7 @@ postgres:
 
 # 21. MongoDB
 mongodb:
-  image: docker.io/library/mongo:latest
+  image: meharnafisdockerhub/mongo:latest
   replicas: 1
   port: 27017
   pvcSize: 10Gi
