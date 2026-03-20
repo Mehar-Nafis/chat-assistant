@@ -67,6 +67,8 @@ spec:
             - containerPort: {{ .Values.memoryRetriever.port }}
               name: http
           volumeMounts:
+            - name: sqlite-data
+              mountPath: /app/shared/memory_retriever
             - name: shared-data
               mountPath: /app/shared
             - name: service-configs
@@ -74,6 +76,8 @@ spec:
               subPath: memory_retriever_config.yaml
               readOnly: true
       volumes:
+        - name: sqlite-data
+          emptyDir: {}
         - name: shared-data
           persistentVolumeClaim:
             claimName: {{ include "chatassistant.fullname" . }}-shared
