@@ -30,6 +30,8 @@ metadata:
   name: {{ include "chatassistant.fullname" . }}-frontend-api
   labels:
     {{- include "chatassistant.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   host: "{{ include "chatassistant.fullname" . }}-frontend-{{ .Release.Namespace }}.{{ .Values.clusterDomain }}"
   path: /api
