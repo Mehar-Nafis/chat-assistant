@@ -29,6 +29,10 @@ spec:
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
+            - name: cache-dir
+              mountPath: /app/node_modules/.cache
+            - name: tmp-dir
+              mountPath: /tmp
           ports:
             - containerPort: {{ .Values.frontend.port }}
               name: http
@@ -36,6 +40,10 @@ spec:
         - name: nginx-config
           configMap:
             name: {{ include "chatassistant.fullname" . }}-nginx-frontend
+        - name: cache-dir
+          emptyDir: {}
+        - name: tmp-dir
+          emptyDir: {}
 
 ---
 apiVersion: v1
