@@ -37,7 +37,21 @@ spec:
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
 
-
+      initContainers:
+        - name: init-db-dir
+          image: busybox:1.36
+          command: ["sh", "-c", "mkdir -p /app/shared/db && chmod 777 /app/shared/db || true"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: sqlite-db
+              mountPath: /app/shared
       containers:
         - name: memory-retriever
           image: {{ .Values.images.memoryRetriever }}
@@ -49,7 +63,7 @@ spec:
             - name: MILVUS_PORT
               value: "19530"
             - name: DATABASE_URL
-              value: "sqlite:////app/shared/memory.db"
+              value: "sqlite:////app/shared/db/memory.db"
           resources:
             {{- include "chat-assistance.resources.backend" . | nindent 12 }}
           securityContext:
@@ -57,13 +71,15 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8011
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 10
           livenessProbe:
             tcpSocket:
               port: 8011
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 30
+            failureThreshold: 10
           volumeMounts:
             - name: sqlite-db
               mountPath: /app/shared

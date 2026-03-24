@@ -151,7 +151,7 @@ sharedConfigs:
     image_embed_port: "8000"
     text_model_name: nvidia/nv-embedqa-e5-v5
     image_model_name: nvidia/nv-embedqa-e5-v5
-    db_port: "http://milvus:19530"
+    db_port: "tcp://milvus:19530"
     db_name: insurance_db
     db_user: insurance_user
     db_password: insurance_password
