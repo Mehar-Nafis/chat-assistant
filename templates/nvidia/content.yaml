@@ -33,7 +33,11 @@ spec:
                   name: ngc-api-secret
                   key: api-key
             - name: NIM_KVCACHE_PERCENT
-              value: ".4"
+              value: ".25"
+            - name: VLLM_GPU_MEMORY_UTILIZATION
+              value: "0.25"
+            - name: NIM_MAX_GPU_MEMORY_FRACTION
+              value: "0.25"
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:
