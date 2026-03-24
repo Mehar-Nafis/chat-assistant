@@ -129,11 +129,11 @@ resources:
       memory: 16Gi
   frontend:
     requests:
-      cpu: 50m
+      cpu: 256m
       memory: 256Mi
     limits:
       cpu: 500m
-      memory: 1Gi
+      memory: 2Gi
 
 # ---------------------------------------------------------------------------
 # Shared service config files
@@ -142,11 +142,11 @@ resources:
 # ---------------------------------------------------------------------------
 sharedConfigs:
   # Mounted at: /app/shared/configs/catalog_retriever/config.yaml
-  # Replace with actual catalog-retriever config content
   catalogRetriever: |
-    # TODO: paste your catalog_retriever config.yaml content here
     milvus_host: milvus
     milvus_port: 19530
+    text_embed_host: embedqa
+    text_embed_port: 8000
 
   rails:
     # Mounted at: /app/shared/configs/rails/config.yml

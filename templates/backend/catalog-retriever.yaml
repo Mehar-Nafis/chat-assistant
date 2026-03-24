@@ -48,14 +48,16 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 30
           volumeMounts:
-            - name: shared-configs
-              mountPath: /app/shared/configs/catalog_retriever/config.yaml
-              subPath: catalog_retriever_config.yaml
+            - name: catalog-config
+              mountPath: /app/shared/configs/catalog_retriever
               readOnly: true
       volumes:
-        - name: shared-configs
+        - name: catalog-config
           configMap:
             name: shared-configs
+            items:
+              - key: catalog_retriever_config.yaml
+                path: config.yaml
 ---
 apiVersion: v1
 kind: Service
