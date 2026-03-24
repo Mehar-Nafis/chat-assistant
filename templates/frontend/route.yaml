@@ -177,6 +177,34 @@ spec:
   {{- end }}
   wildcardPolicy: None
 ---
+# User Management API (frontend path alias /api/users)
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: route-users
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
+spec:
+  {{- if $host }}
+  host: {{ $host }}
+  {{- end }}
+  path: /api/users
+  to:
+    kind: Service
+    name: user-management
+    weight: 100
+  port:
+    targetPort: 8014
+  {{- if $tls.enabled }}
+  tls:
+    termination: {{ $tls.termination }}
+    insecureEdgeTerminationPolicy: {{ $tls.insecureEdgeTerminationPolicy }}
+  {{- end }}
+  wildcardPolicy: None
+---
 # Notification Agent API
 apiVersion: route.openshift.io/v1
 kind: Route
