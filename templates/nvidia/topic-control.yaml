@@ -1,22 +1,5 @@
 {{- if .Values.nvidia.enabled }}
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: topic-control-nim-cache
-  namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "chat-assistance.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  {{- if .Values.storage.storageClassName }}
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.storage.nimCache.topicControl }}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,7 +28,7 @@ spec:
             - sh
             - -c
             - |
-              echo "Waiting for content to be ready before starting TRT build..."
+              echo "Waiting for content to be ready..."
               until wget -q -O /dev/null http://content:8000/v1/health/ready 2>/dev/null; do
                 echo "content not ready, sleeping 30s..."
                 sleep 30
@@ -71,6 +54,8 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
+            - name: NIM_MODEL_PROFILE
+              value: "vllm-bf16-tp1-pp1"
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:
@@ -94,8 +79,7 @@ spec:
               mountPath: /opt/nim/.cache
       volumes:
         - name: nim-cache
-          persistentVolumeClaim:
-            claimName: topic-control-nim-cache
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
