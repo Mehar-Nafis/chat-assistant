@@ -64,6 +64,8 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
+            - name: NIM_MODEL_PROFILE
+              value: "vllm-bf16-tp1"
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:
