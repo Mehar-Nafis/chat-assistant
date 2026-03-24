@@ -1,0 +1,15 @@
+---
+# ConfigMap containing the policy PDF documents.
+# Helm embeds the files from the chart's docs/ directory using .Files.Get.
+# Mounted into catalog-retriever at /app/shared/data so /reindex can process them.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: policy-documents
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+binaryData:
+  health-insurance-user202.pdf: {{ .Files.Get "docs/Health Insurance (Family Floater) (User user202).pdf" | b64enc }}
+  home-contents-insurance-user303.pdf: {{ .Files.Get "docs/Home & Contents Insurance (User- user303).pdf" | b64enc }}
+  Private_Car_Comprehensive_Policy_User_user101.pdf: {{ .Files.Get "docs/Private_Car_Comprehensive_Policy_User_user101.pdf" | b64enc }}

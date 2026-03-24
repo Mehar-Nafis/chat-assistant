@@ -53,6 +53,9 @@ spec:
             - name: catalog-config
               mountPath: /app/shared/configs/catalog_retriever
               readOnly: true
+            - name: policy-docs
+              mountPath: /app/shared/data
+              readOnly: true
       volumes:
         - name: catalog-config
           configMap:
@@ -60,6 +63,9 @@ spec:
             items:
               - key: catalog_retriever_config.yaml
                 path: config.yaml
+        - name: policy-docs
+          configMap:
+            name: policy-documents
 ---
 apiVersion: v1
 kind: Service
