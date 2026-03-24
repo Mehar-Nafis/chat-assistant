@@ -53,6 +53,11 @@ spec:
             - name: chain-config
               mountPath: /app/shared/configs/chain_server
               readOnly: true
+            # Patched summarizer.py: guards against None tool_calls from LLM
+            - name: summarizer-patch
+              mountPath: /app/app/summarizer.py
+              subPath: summarizer.py
+              readOnly: true
       volumes:
         - name: chain-config
           configMap:
@@ -60,6 +65,9 @@ spec:
             items:
               - key: chain_server_config.yaml
                 path: config.yaml
+        - name: summarizer-patch
+          configMap:
+            name: summarizer-patch
 ---
 apiVersion: v1
 kind: Service

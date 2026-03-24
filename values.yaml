@@ -188,22 +188,26 @@ sharedConfigs:
     retriever_port: "http://catalog-retriever:8010"
     memory_port: "http://memory-retriever:8011"
     rails_port: "http://rails:8012"
-    memory_length: 10
+    memory_length: 4096
     top_k_retrieve: 4
     multimodal: true
     unsafe_message: "I'm sorry, but I'm unable to assist with that request as it may violate our content policy."
     routing_prompt: "You are a routing assistant for an insurance company. Based on the user's query, determine which agent should handle it. Available agents: catalog (product/policy information), memory (conversation history), general (general inquiries)."
     chatter_prompt: "You are a helpful insurance assistant. Answer the user's question clearly and concisely based on the provided context."
     categories:
-      - catalog
-      - memory
-      - general
+      - retriever
       - chatter
+      - cart
+      - notification
+      - text_to_sql
+      - claim
     agent_choices:
-      - catalog
-      - memory
-      - general
+      - retriever
       - chatter
+      - cart
+      - notification
+      - text_to_sql
+      - claim
 
   rails:
     # Mounted at: /app/shared/configs/rails/config.yml
