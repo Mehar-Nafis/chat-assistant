@@ -46,7 +46,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
   annotations:
     haproxy.router.openshift.io/timeout: 300s
-    haproxy.router.openshift.io/rewrite-target: /
+    haproxy.router.openshift.io/rewrite-target: /query
 spec:
   {{- if $host }}
   host: {{ $host }}
