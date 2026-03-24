@@ -19,6 +19,17 @@ spec:
         app: topic-control
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values: [llama, content]
+                topologyKey: kubernetes.io/hostname
       imagePullSecrets:
         - name: ncr-registry-secret
       initContainers:
@@ -53,8 +64,6 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
-            - name: NIM_MODEL_PROFILE
-              value: "vllm-bf16-tp1-pp1"
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:

@@ -44,6 +44,12 @@ spec:
               port: 8011
             initialDelaySeconds: 30
             periodSeconds: 30
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
