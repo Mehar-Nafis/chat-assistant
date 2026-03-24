@@ -71,8 +71,6 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
-            - name: NIM_KVCACHE_PERCENT
-              value: "0.1"
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:
