@@ -144,20 +144,20 @@ sharedConfigs:
   # Mounted at: /app/shared/configs/catalog_retriever/config.yaml
   catalogRetriever: |
     milvus_host: milvus
-    milvus_port: 19530
+    milvus_port: "19530"
     text_embed_host: embedqa
-    text_embed_port: 8000
+    text_embed_port: "8000"
     image_embed_host: embedqa
-    image_embed_port: 8000
+    image_embed_port: "8000"
     text_model_name: nvidia/nv-embedqa-e5-v5
     image_model_name: nvidia/nv-embedqa-e5-v5
     db_host: insurance-postgres
-    db_port: 5432
+    db_port: "5432"
     db_name: insurance_db
     db_user: insurance_user
     db_password: insurance_password
     llm_host: llama
-    llm_port: 8000
+    llm_port: "8000"
     llm_model_name: meta/llama-3.1-8b-instruct
     sim_threshold: 0.5
     top_k: 4
@@ -166,7 +166,7 @@ sharedConfigs:
     text_collection: catalog_text_collection
     image_collection: catalog_image_collection
     mongo_host: insurance-mongodb
-    mongo_port: 27017
+    mongo_port: "27017"
     mongo_db: insurance_users
 
   rails:
