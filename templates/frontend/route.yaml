@@ -17,6 +17,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
   annotations:
     haproxy.router.openshift.io/timeout: 60s
+    haproxy.router.openshift.io/websocket: "true"
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -45,6 +46,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
   annotations:
     haproxy.router.openshift.io/timeout: 300s
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -71,6 +73,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -97,6 +101,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -123,6 +129,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -149,6 +157,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -175,6 +185,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -201,6 +213,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/rewrite-target: /
 spec:
   {{- if $host }}
   host: {{ $host }}
