@@ -151,11 +151,16 @@ sharedConfigs:
     image_embed_port: "8000"
     text_model_name: nvidia/nv-embedqa-e5-v5
     image_model_name: nvidia/nv-embedqa-e5-v5
-    db_host: insurance-postgres
-    db_port: "5432"
+    db_host: milvus
+    db_port: "19530"
     db_name: insurance_db
     db_user: insurance_user
     db_password: insurance_password
+    pg_host: insurance-postgres
+    pg_port: "5432"
+    pg_name: insurance_db
+    pg_user: insurance_user
+    pg_password: insurance_password
     llm_host: llama
     llm_port: "8000"
     llm_model_name: meta/llama-3.1-8b-instruct
