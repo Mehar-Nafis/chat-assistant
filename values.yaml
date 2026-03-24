@@ -127,10 +127,10 @@ resources:
   nvidia:
     requests:
       cpu: 500m
-      memory: 4Gi
-    limits:
-      cpu: "2"
       memory: 16Gi
+    limits:
+      cpu: "4"
+      memory: 48Gi
   frontend:
     requests:
       cpu: 256m
