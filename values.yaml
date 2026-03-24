@@ -163,7 +163,11 @@ sharedConfigs:
     top_k: 4
     chunk_size: 510
     chunk_overlap: 200
-    collection_name: catalog_collection
+    text_collection: catalog_text_collection
+    image_collection: catalog_image_collection
+    mongo_host: insurance-mongodb
+    mongo_port: 27017
+    mongo_db: insurance_users
 
   rails:
     # Mounted at: /app/shared/configs/rails/config.yml
