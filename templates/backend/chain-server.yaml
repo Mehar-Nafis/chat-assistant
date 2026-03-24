@@ -40,13 +40,26 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8009
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 10
           livenessProbe:
             tcpSocket:
               port: 8009
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 30
+            failureThreshold: 10
+          volumeMounts:
+            - name: chain-config
+              mountPath: /app/shared/configs/chain_server
+              readOnly: true
+      volumes:
+        - name: chain-config
+          configMap:
+            name: shared-configs
+            items:
+              - key: catalog_retriever_config.yaml
+                path: config.yaml
 ---
 apiVersion: v1
 kind: Service

@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: milvus-data
+  name: milvus-storage
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
@@ -99,12 +99,12 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 30
           volumeMounts:
-            - name: milvus-data
+            - name: milvus-storage
               mountPath: /var/lib/milvus
       volumes:
-        - name: milvus-data
+        - name: milvus-storage
           persistentVolumeClaim:
-            claimName: milvus-data
+            claimName: milvus-storage
 ---
 # Milvus – Service
 apiVersion: v1

@@ -40,13 +40,15 @@ spec:
           readinessProbe:
             tcpSocket:
               port: 8010
-            initialDelaySeconds: 15
-            periodSeconds: 10
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 10
           livenessProbe:
             tcpSocket:
               port: 8010
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 30
+            failureThreshold: 10
           volumeMounts:
             - name: catalog-config
               mountPath: /app/shared/configs/catalog_retriever
