@@ -48,6 +48,11 @@ spec:
             - name: rails-config
               mountPath: /app/shared/configs/rails
               readOnly: true
+            # Patched main.py: adds top-level 'content' key to NemoGuardrails response
+            - name: rails-main-patch
+              mountPath: /app/main.py
+              subPath: main.py
+              readOnly: true
       volumes:
         - name: rails-config
           configMap:
@@ -55,6 +60,9 @@ spec:
             items:
               - key: config.yml
                 path: config.yml
+        - name: rails-main-patch
+          configMap:
+            name: rails-main-patch
 ---
 apiVersion: v1
 kind: Service
