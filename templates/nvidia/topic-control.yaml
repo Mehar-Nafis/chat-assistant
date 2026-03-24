@@ -1,5 +1,22 @@
 {{- if .Values.nvidia.enabled }}
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: topic-control-nim-cache
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.storage.storageClassName }}
+  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.nimCache.topicControl }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +38,28 @@ spec:
     spec:
       imagePullSecrets:
         - name: ncr-registry-secret
+      initContainers:
+        - name: wait-for-content
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for content to be ready before starting TRT build..."
+              until wget -q -O /dev/null http://content:8000/v1/health/ready 2>/dev/null; do
+                echo "content not ready, sleeping 30s..."
+                sleep 30
+              done
+              echo "content is ready, starting topic-control NIM."
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
       containers:
         - name: topic-control
           image: {{ .Values.images.topicControl }}
@@ -52,6 +91,13 @@ spec:
             initialDelaySeconds: 300
             periodSeconds: 30
             failureThreshold: 30
+          volumeMounts:
+            - name: nim-cache
+              mountPath: /opt/nim/.cache
+      volumes:
+        - name: nim-cache
+          persistentVolumeClaim:
+            claimName: topic-control-nim-cache
 ---
 apiVersion: v1
 kind: Service

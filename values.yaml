@@ -52,6 +52,10 @@ storage:
     size: 5Gi
   memoryRetriever:
     size: 1Gi
+  nimCache:
+    llama: 30Gi
+    content: 30Gi
+    topicControl: 30Gi
 
 # ---------------------------------------------------------------------------
 # Container images

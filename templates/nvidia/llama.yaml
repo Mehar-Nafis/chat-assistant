@@ -1,5 +1,22 @@
 {{- if .Values.nvidia.enabled }}
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: llama-nim-cache
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.storage.storageClassName }}
+  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.nimCache.llama }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,6 +69,13 @@ spec:
             initialDelaySeconds: 300
             periodSeconds: 30
             failureThreshold: 30
+          volumeMounts:
+            - name: nim-cache
+              mountPath: /opt/nim/.cache
+      volumes:
+        - name: nim-cache
+          persistentVolumeClaim:
+            claimName: llama-nim-cache
 ---
 apiVersion: v1
 kind: Service
