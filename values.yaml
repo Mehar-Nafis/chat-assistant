@@ -183,7 +183,7 @@ sharedConfigs:
     milvus_port: "19530"
 
   chainServer: |
-    llm_port: "http://llama:8000"
+    llm_port: "http://llama:8000/v1"
     llm_name: meta/llama-3.1-8b-instruct
     retriever_port: "http://catalog-retriever:8010"
     memory_port: "http://memory-retriever:8011"
