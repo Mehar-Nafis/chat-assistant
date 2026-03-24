@@ -147,6 +147,8 @@ sharedConfigs:
     milvus_port: 19530
     text_embed_host: embedqa
     text_embed_port: 8000
+    image_embed_host: embedqa
+    image_embed_port: 8000
 
   rails:
     # Mounted at: /app/shared/configs/rails/config.yml

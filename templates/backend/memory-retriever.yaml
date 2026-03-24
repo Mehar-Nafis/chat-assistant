@@ -62,7 +62,7 @@ spec:
             periodSeconds: 30
           volumeMounts:
             - name: sqlite-db
-              mountPath: /app/data
+              mountPath: /app/shared
       volumes:
         - name: sqlite-db
           persistentVolumeClaim:
