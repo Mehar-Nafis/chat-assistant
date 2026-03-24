@@ -141,32 +141,6 @@ spec:
   {{- end }}
   wildcardPolicy: None
 ---
-# Speech Service API
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: route-speech-service
-  namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "chat-assistance.labels" . | nindent 4 }}
-spec:
-  {{- if $host }}
-  host: {{ $host }}
-  {{- end }}
-  path: /api/speech
-  to:
-    kind: Service
-    name: speech-service
-    weight: 100
-  port:
-    targetPort: 8013
-  {{- if $tls.enabled }}
-  tls:
-    termination: {{ $tls.termination }}
-    insecureEdgeTerminationPolicy: {{ $tls.insecureEdgeTerminationPolicy }}
-  {{- end }}
-  wildcardPolicy: None
----
 # User Management API
 apiVersion: route.openshift.io/v1
 kind: Route
