@@ -198,10 +198,12 @@ sharedConfigs:
       - catalog
       - memory
       - general
+      - chatter
     agent_choices:
       - catalog
       - memory
       - general
+      - chatter
 
   rails:
     # Mounted at: /app/shared/configs/rails/config.yml
