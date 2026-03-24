@@ -3,7 +3,7 @@
 # =============================================================================
 
 # Target OpenShift namespace / project
-namespace: chatassistance
+namespace: chat-assistant
 
 # ---------------------------------------------------------------------------
 # NGC / NIM credentials
