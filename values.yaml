@@ -72,7 +72,7 @@ images:
   userManagement: lakshmilavanya2001/insurance-chat-assistant:user-management
   notificationAgent: lakshmilavanya2001/insurance-chat-assistant:notification-agent
   # NVIDIA / NIM (pulled from nvcr.io – unchanged)
-  llama: "nvcr.io/nim/meta/llama-3.1-8b-instruct:latest"
+  llama: "nvcr.io/nim/meta/llama-3.1-8b-instruct:1.2.2"
   embedqa: "nvcr.io/nim/nvidia/nv-embedqa-e5-v5:1.6"
   content: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-content-safety:1.10.1"
   topicControl: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-topic-control:1.0.0"
@@ -150,6 +150,7 @@ sharedConfigs:
     image_embed_host: embedqa
     image_embed_port: 8000
     text_model_name: nvidia/nv-embedqa-e5-v5
+    image_model_name: nvidia/nv-embedqa-e5-v5
 
   rails:
     # Mounted at: /app/shared/configs/rails/config.yml
