@@ -58,7 +58,7 @@ spec:
           configMap:
             name: shared-configs
             items:
-              - key: catalog_retriever_config.yaml
+              - key: chain_server_config.yaml
                 path: config.yaml
 ---
 apiVersion: v1
