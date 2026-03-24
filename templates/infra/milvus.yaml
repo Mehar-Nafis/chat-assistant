@@ -80,7 +80,7 @@ spec:
             allowPrivilegeEscalation: false
             runAsNonRoot: true
             seccompProfile:
-              type: Unconfined
+              type: RuntimeDefault
             capabilities:
               drop:
                 - ALL
