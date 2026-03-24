@@ -66,6 +66,10 @@ spec:
   wildcardPolicy: None
 ---
 # Chain Server API
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: route-chain-server
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
