@@ -149,6 +149,7 @@ sharedConfigs:
     text_embed_port: 8000
     image_embed_host: embedqa
     image_embed_port: 8000
+    text_model_name: nvidia/nv-embedqa-e5-v5
 
   rails:
     # Mounted at: /app/shared/configs/rails/config.yml

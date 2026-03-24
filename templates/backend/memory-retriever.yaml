@@ -36,6 +36,23 @@ spec:
         app: memory-retriever
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
+      securityContext:
+        fsGroup: 1001
+      initContainers:
+        - name: init-db-dir
+          image: busybox:1.36
+          command: ["sh", "-c", "mkdir -p /app/shared/db && chmod 777 /app/shared/db"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: sqlite-db
+              mountPath: /app/shared
       containers:
         - name: memory-retriever
           image: {{ .Values.images.memoryRetriever }}
@@ -46,6 +63,8 @@ spec:
               value: "milvus"
             - name: MILVUS_PORT
               value: "19530"
+            - name: DATABASE_URL
+              value: "sqlite:////app/shared/db/memory.db"
           resources:
             {{- include "chat-assistance.resources.backend" . | nindent 12 }}
           securityContext:
