@@ -18,6 +18,21 @@ spec:
         app: memory-retriever
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
+      initContainers:
+        - name: copy-app
+          image: {{ .Values.images.memoryRetriever }}
+          command: ["sh", "-c", "cp -r /app/. /mnt/app/"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: app-data
+              mountPath: /mnt/app
       containers:
         - name: memory-retriever
           image: {{ .Values.images.memoryRetriever }}
@@ -28,8 +43,6 @@ spec:
               value: "milvus"
             - name: MILVUS_PORT
               value: "19530"
-            - name: DATABASE_URL
-              value: "sqlite:////tmp/memory.db"
           resources:
             {{- include "chat-assistance.resources.backend" . | nindent 12 }}
           securityContext:
@@ -45,10 +58,10 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 30
           volumeMounts:
-            - name: tmp
-              mountPath: /tmp
+            - name: app-data
+              mountPath: /app
       volumes:
-        - name: tmp
+        - name: app-data
           emptyDir: {}
 ---
 apiVersion: v1

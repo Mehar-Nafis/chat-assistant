@@ -12,6 +12,10 @@ data:
   catalog_retriever_config.yaml: |
     {{- .Values.sharedConfigs.catalogRetriever | nindent 4 }}
 
+  # memory-retriever: mounted at /app/shared/configs/memory_retriever/config.yaml
+  memory_retriever_config.yaml: |
+    {{- .Values.sharedConfigs.memoryRetriever | nindent 4 }}
+
   # chain-server: mounted at /app/shared/configs/chain_server/config.yaml
   chain_server_config.yaml: |
     {{- .Values.sharedConfigs.chainServer | nindent 4 }}
