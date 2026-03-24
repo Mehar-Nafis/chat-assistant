@@ -36,11 +36,36 @@ spec:
   {{- end }}
   wildcardPolicy: None
 ---
-# Chain Server API
+# Chain Server query/stream API (frontend path alias /api/query)
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: route-chain-server
+  name: route-query
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/timeout: 300s
+    haproxy.router.openshift.io/rewrite-target: /
+spec:
+  {{- if $host }}
+  host: {{ $host }}
+  {{- end }}
+  path: /api/query
+  to:
+    kind: Service
+    name: chain-server
+    weight: 100
+  port:
+    targetPort: 8009
+  {{- if $tls.enabled }}
+  tls:
+    termination: {{ $tls.termination }}
+    insecureEdgeTerminationPolicy: {{ $tls.insecureEdgeTerminationPolicy }}
+  {{- end }}
+  wildcardPolicy: None
+---
+# Chain Server API
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
