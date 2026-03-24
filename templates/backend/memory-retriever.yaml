@@ -1,4 +1,22 @@
 ---
+# memory-retriever – PVC for SQLite database
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: memory-retriever-db
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.storage.storageClassName }}
+  storageClassName: {{ .Values.storage.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.memoryRetriever.size }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,6 +60,13 @@ spec:
               port: 8011
             initialDelaySeconds: 30
             periodSeconds: 30
+          volumeMounts:
+            - name: sqlite-db
+              mountPath: /app/data
+      volumes:
+        - name: sqlite-db
+          persistentVolumeClaim:
+            claimName: memory-retriever-db
 ---
 apiVersion: v1
 kind: Service

@@ -43,6 +43,18 @@ spec:
               port: 8012
             initialDelaySeconds: 30
             periodSeconds: 30
+          volumeMounts:
+            # NemoGuardrails expects a directory – mount the whole ConfigMap here
+            - name: rails-config
+              mountPath: /app/shared/configs/rails
+              readOnly: true
+      volumes:
+        - name: rails-config
+          configMap:
+            name: shared-configs
+            items:
+              - key: config.yml
+                path: config.yml
 ---
 apiVersion: v1
 kind: Service

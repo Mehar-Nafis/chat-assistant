@@ -50,6 +50,8 @@ storage:
     size: 5Gi
   mongo:
     size: 5Gi
+  memoryRetriever:
+    size: 1Gi
 
 # ---------------------------------------------------------------------------
 # Container images
@@ -128,7 +130,30 @@ resources:
   frontend:
     requests:
       cpu: 50m
-      memory: 128Mi
-    limits:
-      cpu: 200m
       memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+# ---------------------------------------------------------------------------
+# Shared service config files
+# These are mounted inside containers at /app/shared/configs/<service>/
+# IMPORTANT: Replace the placeholder values below with your actual config content.
+# ---------------------------------------------------------------------------
+sharedConfigs:
+  # Mounted at: /app/shared/configs/catalog_retriever/config.yaml
+  # Replace with actual catalog-retriever config content
+  catalogRetriever: |
+    # TODO: paste your catalog_retriever config.yaml content here
+    milvus_host: milvus
+    milvus_port: 19530
+
+  rails:
+    # Mounted at: /app/shared/configs/rails/config.yml
+    # Replace with actual NemoGuardrails config.yml content
+    configYml: |
+      # TODO: paste your NemoGuardrails config.yml content here
+      models:
+        - type: main
+          engine: nim
+          model: meta/llama-3.1-8b-instruct

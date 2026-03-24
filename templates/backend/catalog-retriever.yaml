@@ -47,6 +47,15 @@ spec:
               port: 8010
             initialDelaySeconds: 30
             periodSeconds: 30
+          volumeMounts:
+            - name: shared-configs
+              mountPath: /app/shared/configs/catalog_retriever/config.yaml
+              subPath: catalog_retriever_config.yaml
+              readOnly: true
+      volumes:
+        - name: shared-configs
+          configMap:
+            name: shared-configs
 ---
 apiVersion: v1
 kind: Service
