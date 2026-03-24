@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+data:
+  init_db.sql: |
+    -- Initialise insurance database
+    CREATE TABLE IF NOT EXISTS example (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100)
+    );

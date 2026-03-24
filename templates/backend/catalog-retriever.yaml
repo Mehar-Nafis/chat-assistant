@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-retriever
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+    app: catalog-retriever
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: catalog-retriever
+  template:
+    metadata:
+      labels:
+        app: catalog-retriever
+        {{- include "chat-assistance.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: catalog-retriever
+          image: {{ .Values.images.catalogRetriever }}
+          ports:
+            - containerPort: 8010
+          env:
+            - name: EMBED_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ngc-api-secret
+                  key: api-key
+            - name: MILVUS_HOST
+              value: "milvus"
+            - name: MILVUS_PORT
+              value: "19530"
+          resources:
+            {{- include "chat-assistance.resources.backend" . | nindent 12 }}
+          securityContext:
+            {{- include "chat-assistance.securityContext" . | nindent 12 }}
+          readinessProbe:
+            tcpSocket:
+              port: 8010
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8010
+            initialDelaySeconds: 30
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-retriever
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "chat-assistance.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 8010
+      targetPort: 8010
+  selector:
+    app: catalog-retriever

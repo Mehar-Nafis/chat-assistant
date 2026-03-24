@@ -1,0 +1,136 @@
+# =============================================================================
+# Chat Assistance – Helm Values
+# =============================================================================
+
+# Target OpenShift namespace / project
+namespace: chatassistance
+
+# ---------------------------------------------------------------------------
+# NGC / NIM credentials
+# Pass at install time:
+#   helm install ... --set ngc.apiKey=<YOUR_KEY>
+# Or via a private values file:
+#   helm install ... -f my-secrets.yaml
+# ---------------------------------------------------------------------------
+ngc:
+  # Required – the chart will fail to render if left empty
+  apiKey: ""
+  # NGC registry username (leave as default for NIM)
+  registryUser: "$oauthtoken"
+
+# ---------------------------------------------------------------------------
+# Database credentials
+# ---------------------------------------------------------------------------
+db:
+  postgres:
+    database: insurance_db
+    user: insurance_user
+    password: insurance_password
+  mongo:
+    database: insurance_users
+  minio:
+    rootUser: minioadmin
+    rootPassword: minioadmin
+    accessKey: minioadmin
+    secretKey: minioadmin
+
+# ---------------------------------------------------------------------------
+# Persistent storage
+# storageClassName: "" → use the cluster default StorageClass
+# ---------------------------------------------------------------------------
+storage:
+  storageClassName: ""
+  etcd:
+    size: 1Gi
+  minio:
+    size: 5Gi
+  milvus:
+    size: 5Gi
+  postgres:
+    size: 5Gi
+  mongo:
+    size: 5Gi
+
+# ---------------------------------------------------------------------------
+# Container images
+# ---------------------------------------------------------------------------
+images:
+  # Infrastructure
+  etcd: quay.io/coreos/etcd:v3.5.5
+  minio: "minio/minio:RELEASE.2023-03-20T20-16-18Z"
+  milvus: milvusdb/milvus:v2.4.13-hotfix
+  postgres: postgres:15
+  mongodb: mongo:6
+  # Backend services
+  chainServer: lakshmilavanya2001/chain-server:latest
+  catalogRetriever: lakshmilavanya2001/catalog-retriever:latest
+  memoryRetriever: lakshmilavanya2001/memory-retriever:latest
+  rails: lakshmilavanya2001/rails:latest
+  speechService: lakshmilavanya2001/speech-service:latest
+  textToSqlAgent: lakshmilavanya2001/text-to-sql-agent:latest
+  userManagement: lakshmilavanya2001/user-management:latest
+  notificationAgent: lakshmilavanya2001/notification-agent:latest
+  # NVIDIA / NIM
+  rivaSpeech: "nvcr.io/nvidia/riva/riva-speech:2.14.0"
+  llama: "nvcr.io/nim/meta/llama-3.1-8b-instruct:latest"
+  embedqa: "nvcr.io/nim/nvidia/nv-embedqa-e5-v5:1.6"
+  content: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-content-safety:1.10.1"
+  topicControl: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-topic-control:1.0.0"
+  # Frontend
+  frontend: lakshmilavanya2001/shopping-frontend:latest
+
+# Default replica count for all deployments
+replicaCount: 1
+
+# ---------------------------------------------------------------------------
+# NVIDIA feature flag
+# Set nvidia.enabled: false to skip all GPU workloads (riva, llama, embedqa, etc.)
+# ---------------------------------------------------------------------------
+nvidia:
+  enabled: true
+  gpuCount: 1
+
+# ---------------------------------------------------------------------------
+# OpenShift Routes (HAProxy path-based – one Route per service)
+# Leave host blank for OpenShift to auto-assign a hostname.
+# All routes will share the same auto-assigned hostname.
+# ---------------------------------------------------------------------------
+route:
+  host: ""
+  tls:
+    enabled: true        # Edge-terminated TLS (recommended)
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+
+# ---------------------------------------------------------------------------
+# Resource requests & limits
+# ---------------------------------------------------------------------------
+resources:
+  infra:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  backend:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 2Gi
+  nvidia:
+    requests:
+      cpu: 500m
+      memory: 4Gi
+    limits:
+      cpu: "2"
+      memory: 16Gi
+  frontend:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
