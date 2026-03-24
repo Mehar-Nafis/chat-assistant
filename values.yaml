@@ -100,7 +100,7 @@ nvidia:
 # All routes will share the same auto-assigned hostname.
 # ---------------------------------------------------------------------------
 route:
-  host: ""
+  host: "route-frontend-chat-assistant.apps.apjcaipod.dcloud.cisco.com"
   tls:
     enabled: true        # Edge-terminated TLS (recommended)
     termination: edge
