@@ -29,7 +29,7 @@ spec:
             - name: MILVUS_PORT
               value: "19530"
             - name: DATABASE_URL
-              value: "sqlite:////app/shared/db/memory.db"
+              value: "sqlite:////tmp/memory.db"
           resources:
             {{- include "chat-assistance.resources.backend" . | nindent 12 }}
           securityContext:
@@ -44,12 +44,6 @@ spec:
               port: 8011
             initialDelaySeconds: 30
             periodSeconds: 30
-          volumeMounts:
-            - name: sqlite-db
-              mountPath: /app/shared/db
-      volumes:
-        - name: sqlite-db
-          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
