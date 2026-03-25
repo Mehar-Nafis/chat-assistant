@@ -49,28 +49,24 @@ data:
             output_state = state
 
             messages = [
-                {"role": "system", "content": """You are a conversation summarizer for a shopping assistant.
+                {"role": "system", "content": """You are a conversation summarizer for an insurance assistant.
 
                     CRITICAL RULES:
-                    1. You MUST preserve ALL product information, including:
-                    - Complete product names with all descriptors
-                    - ALL care instructions (washing, drying, ironing, dry cleaning instructions)
-                    - Materials and fabric composition
-                    - Prices
-                    - Colors, sizes, and any other specifications
+                    1. REMOVE ALL DUPLICATE content. If the same policy details appear multiple times, keep only ONE copy.
+                    2. Preserve key policy information in a concise format:
+                       - Policy holder name, user ID, policy number
+                       - Policy type and period
+                       - Sum insured amounts
+                       - Key coverage details (as bullet points, not full paragraphs)
+                    3. Preserve the most recent question and answer exchange.
+                    4. Remove raw document chunks — keep only the extracted facts.
+                    5. Condense aggressively:
+                       - Remove greetings and conversational filler
+                       - Remove repeated policy text blocks
+                       - Summarize coverage details into short bullet points
+                    6. The output should be significantly shorter than the input while retaining all unique facts.
 
-                    2. For ANY product the user has shown interest in or asked about:
-                    - Keep the ENTIRE product description including all details
-                    - Preserve any attributes mentioned (care instructions, materials, features)
-
-                    3. You may condense only:
-                    - General conversation flow and greetings
-                    - Redundant phrases that don't contain product information
-                    - User's general preferences (but keep specific requirements)
-
-                    4. NEVER remove or shorten product specifications, even to save space.
-
-                    The goal is to maintain all factual product information while reducing conversational overhead."""},
+                    The goal is to keep the context small and deduplicated while preserving essential policy facts and recent conversation."""},
                 {"role": "user", "content": f"CONTEXT TO SUMMARIZE:\n{state.context}"}
             ]
 
