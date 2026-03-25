@@ -96,7 +96,7 @@ nvidia:
   llamaGpuCount: 1
   # L40S has 48GB VRAM – time-slicing shares compute only (not memory)
   # NIM_KVCACHE_PERCENT: % of GPU memory for KV cache (vLLM backend)
-  kvCachePercent: "75"
+  kvCachePercent: "45"
   # NIM_MAX_NUM_SEQS: max parallel sequences (vLLM backend) - keep low to reduce time-slice occupation
   maxNumSeqs: "2"
   # Optional: label your nodes with `gpu-role` and set these to pin NIM pods
