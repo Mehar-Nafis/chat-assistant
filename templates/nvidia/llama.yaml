@@ -33,7 +33,13 @@ spec:
                   name: ngc-api-secret
                   key: api-key
           resources:
-            {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
+            requests:
+              cpu: {{ .Values.resources.nvidia.requests.cpu }}
+              memory: {{ .Values.resources.nvidia.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.nvidia.limits.cpu }}
+              memory: {{ .Values.resources.nvidia.limits.memory }}
+              nvidia.com/gpu: {{ .Values.nvidia.llamaGpuCount | default .Values.nvidia.gpuCount }}
           securityContext:
             {{- include "chat-assistance.securityContext" . | nindent 12 }}
           readinessProbe:
