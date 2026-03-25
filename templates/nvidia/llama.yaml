@@ -46,10 +46,10 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
-            - name: NIM_MAX_BATCH_SIZE
-              value: {{ .Values.nvidia.maxBatchSize | default "1" | quote }}
-            - name: NIM_KV_CACHE_FRACTION
-              value: {{ .Values.nvidia.kvCacheUtilization | default "0.5" | quote }}
+            - name: NIM_MAX_NUM_SEQS
+              value: {{ .Values.nvidia.maxNumSeqs | default "2" | quote }}
+            - name: NIM_KVCACHE_PERCENT
+              value: {{ .Values.nvidia.kvCachePercent | default "75" | quote }}
           resources:
             requests:
               cpu: {{ .Values.resources.nvidia.requests.cpu }}

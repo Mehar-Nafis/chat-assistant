@@ -69,10 +69,10 @@ spec:
                   key: api-key
             - name: NIM_MODEL_PROFILE
               value: "vllm-bf16-tp1"
-            - name: NIM_MAX_BATCH_SIZE
-              value: {{ .Values.nvidia.maxBatchSize | default "1" | quote }}
-            - name: NIM_KV_CACHE_FRACTION
-              value: {{ .Values.nvidia.kvCacheUtilization | default "0.75" | quote }}
+            - name: NIM_MAX_NUM_SEQS
+              value: {{ .Values.nvidia.maxNumSeqs | default "2" | quote }}
+            - name: NIM_KVCACHE_PERCENT
+              value: {{ .Values.nvidia.kvCachePercent | default "75" | quote }}
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:

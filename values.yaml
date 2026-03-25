@@ -95,10 +95,10 @@ nvidia:
   gpuCount: 1
   llamaGpuCount: 1
   # L40S has 48GB VRAM – time-slicing shares compute only (not memory)
-  # KV cache at 0.75 is safe; reduce if multiple NIM pods land on same physical GPU
-  kvCacheUtilization: "0.75"
-  # Keep batch=1 so a single NIM doesn't occupy a GPU slice for too long
-  maxBatchSize: "1"
+  # NIM_KVCACHE_PERCENT: % of GPU memory for KV cache (vLLM backend)
+  kvCachePercent: "75"
+  # NIM_MAX_NUM_SEQS: max parallel sequences (vLLM backend) - keep low to reduce time-slice occupation
+  maxNumSeqs: "2"
   # Optional: label your nodes with `gpu-role` and set these to pin NIM pods
   # oc label node wn1... gpu-role=embedqa-topic
   # oc label node wn2... gpu-role=llama-content
