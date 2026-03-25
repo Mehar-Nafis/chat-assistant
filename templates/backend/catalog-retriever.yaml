@@ -56,6 +56,16 @@ spec:
             - name: policy-docs
               mountPath: /app/shared/data
               readOnly: true
+            # Patched main.py: loads document metadata from JSON
+            - name: catalog-main-patch
+              mountPath: /app/app/main.py
+              subPath: main.py
+              readOnly: true
+            # Patched retriever.py: accepts explicit user_id/document_type metadata
+            - name: catalog-retriever-patch
+              mountPath: /app/app/retriever.py
+              subPath: retriever.py
+              readOnly: true
       volumes:
         - name: catalog-config
           configMap:
@@ -66,6 +76,12 @@ spec:
         - name: policy-docs
           configMap:
             name: policy-documents
+        - name: catalog-main-patch
+          configMap:
+            name: catalog-main-patch
+        - name: catalog-retriever-patch
+          configMap:
+            name: catalog-retriever-patch
 ---
 apiVersion: v1
 kind: Service
