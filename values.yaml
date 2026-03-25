@@ -94,6 +94,19 @@ nvidia:
   enabled: true
   gpuCount: 1
   llamaGpuCount: 1
+  # L40S has 48GB VRAM – time-slicing shares compute only (not memory)
+  # KV cache at 0.75 is safe; reduce if multiple NIM pods land on same physical GPU
+  kvCacheUtilization: "0.75"
+  # Keep batch=1 so a single NIM doesn't occupy a GPU slice for too long
+  maxBatchSize: "1"
+  # Optional: label your nodes with `gpu-role` and set these to pin NIM pods
+  # oc label node wn1... gpu-role=embedqa-topic
+  # oc label node wn2... gpu-role=llama-content
+  nodeAffinity:
+    llama: ""          # e.g. llama-content
+    content: ""        # e.g. llama-content
+    topicControl: ""   # e.g. embedqa-topic
+    embedqa: ""        # e.g. embedqa-topic
 
 # ---------------------------------------------------------------------------
 # OpenShift Routes (HAProxy path-based – one Route per service)
@@ -168,10 +181,10 @@ sharedConfigs:
     llm_host: llama
     llm_port: "8000"
     llm_model_name: meta/llama-3.1-8b-instruct
-    sim_threshold: 0.3
-    top_k: 2
-    chunk_size: 510
-    chunk_overlap: 200
+    sim_threshold: 0.35
+    top_k: 1
+    chunk_size: 256
+    chunk_overlap: 50
     text_collection: catalog_text_collection
     image_collection: catalog_image_collection
     mongo_host: insurance-mongodb
@@ -189,8 +202,8 @@ sharedConfigs:
     retriever_port: "http://catalog-retriever:8010"
     memory_port: "http://memory-retriever:8011"
     rails_port: "http://rails:8012"
-    memory_length: 1024
-    top_k_retrieve: 2
+    memory_length: 512
+    top_k_retrieve: 1
     multimodal: true
     unsafe_message: "I'm sorry, but I'm unable to assist with that request as it may violate our content policy."
     routing_prompt: "You are a routing assistant for an insurance company. Based on the user's query, determine which agent should handle it. Available agents: catalog (product/policy information), memory (conversation history), general (general inquiries)."

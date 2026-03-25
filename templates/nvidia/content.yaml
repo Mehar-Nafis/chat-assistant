@@ -21,6 +21,18 @@ spec:
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
       {{- include "chat-assistance.gpuSpread" . | nindent 6 }}
+      {{- if .Values.nvidia.nodeAffinity.content }}
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: gpu-role
+                    operator: In
+                    values:
+                      - {{ .Values.nvidia.nodeAffinity.content }}
+      {{- end }}
       imagePullSecrets:
         - name: ncr-registry-secret
       initContainers:
@@ -57,6 +69,10 @@ spec:
                   key: api-key
             - name: NIM_MODEL_PROFILE
               value: "vllm-bf16-tp1-pp1"
+            - name: NIM_MAX_BATCH_SIZE
+              value: {{ .Values.nvidia.maxBatchSize | default "1" | quote }}
+            - name: NIM_KV_CACHE_FRACTION
+              value: {{ .Values.nvidia.kvCacheUtilization | default "0.75" | quote }}
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:
