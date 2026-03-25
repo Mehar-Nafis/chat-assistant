@@ -17,8 +17,10 @@ spec:
     metadata:
       labels:
         app: topic-control
+        gpu-workload: "true"
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
+      {{- include "chat-assistance.gpuSpread" . | nindent 6 }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

@@ -93,7 +93,7 @@ replicaCount: 1
 nvidia:
   enabled: true
   gpuCount: 1
-  llamaGpuCount: 2
+  llamaGpuCount: 1
 
 # ---------------------------------------------------------------------------
 # OpenShift Routes (HAProxy path-based – one Route per service)

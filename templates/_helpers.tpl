@@ -69,6 +69,21 @@ limits:
 {{/*
 Frontend resource block.
 */}}
+{{/*
+Topology spread constraint for GPU workloads.
+Spreads GPU pods evenly across worker nodes with maxSkew=1.
+Usage: {{- include "chat-assistance.gpuSpread" . | nindent 8 }}
+*/}}
+{{- define "chat-assistance.gpuSpread" -}}
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        gpu-workload: "true"
+{{- end }}
+
 {{- define "chat-assistance.resources.frontend" -}}
 requests:
   cpu: {{ .Values.resources.frontend.requests.cpu }}
