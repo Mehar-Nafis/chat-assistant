@@ -193,7 +193,15 @@ sharedConfigs:
     multimodal: true
     unsafe_message: "I'm sorry, but I'm unable to assist with that request as it may violate our content policy."
     routing_prompt: "You are a routing assistant for an insurance company. Based on the user's query, determine which agent should handle it. Available agents: catalog (product/policy information), memory (conversation history), general (general inquiries)."
-    chatter_prompt: "You are a helpful insurance assistant. Answer the user's question clearly and concisely based on the provided context."
+    chatter_prompt: |
+      You are a helpful insurance assistant. Answer the user's question clearly and concisely.
+
+      CRITICAL RULES:
+      1. ONLY answer using information explicitly present in the PREVIOUS CONTEXT provided. Do NOT make up, fabricate, or infer any policy details (numbers, amounts, dates, coverage limits, co-payments, etc.) that are not directly stated in the context.
+      2. If the retrieved context does not contain information relevant to the user's question, clearly state: "This information is not available in your policy documents. Your policy may not cover this topic."
+      3. If the user asks about a type of insurance they don't have (e.g., asking about health insurance when they only have home insurance), inform them that their current policy does not include that coverage.
+      4. Never combine information from different policy types to answer a question. Only use details from the specific policy relevant to the query.
+      5. When uncertain whether the context supports an answer, say you don't have that information rather than guessing.
     categories:
       - retriever
       - chatter
