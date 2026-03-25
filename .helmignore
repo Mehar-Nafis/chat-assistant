@@ -1,0 +1,2 @@
+# Ignore docs directory - PDFs are managed via kubectl configmap, not Helm
+docs/
