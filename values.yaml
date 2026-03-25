@@ -150,9 +150,9 @@ sharedConfigs:
     milvus_host: milvus
     milvus_port: "19530"
     text_embed_host: embedqa
-    text_embed_port: "8000"
+    text_embed_port: "http://embedqa:8000/v1"
     image_embed_host: embedqa
-    image_embed_port: "8000"
+    image_embed_port: "http://embedqa:8000/v1"
     text_model_name: nvidia/nv-embedqa-e5-v5
     image_model_name: nvidia/nv-embedqa-e5-v5
     db_port: "tcp://milvus:19530"
