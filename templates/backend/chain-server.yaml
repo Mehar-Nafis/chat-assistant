@@ -58,6 +58,11 @@ spec:
               mountPath: /app/app/summarizer.py
               subPath: summarizer.py
               readOnly: true
+            # Patched retriever.py: skips expensive _get_categories LLM calls (~40sec savings)
+            - name: chain-retriever-patch
+              mountPath: /app/app/retriever.py
+              subPath: retriever.py
+              readOnly: true
       volumes:
         - name: chain-config
           configMap:
@@ -68,6 +73,9 @@ spec:
         - name: summarizer-patch
           configMap:
             name: summarizer-patch
+        - name: chain-retriever-patch
+          configMap:
+            name: chain-retriever-patch
 ---
 apiVersion: v1
 kind: Service
