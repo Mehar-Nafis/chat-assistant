@@ -167,7 +167,7 @@ sharedConfigs:
     llm_host: llama
     llm_port: "8000"
     llm_model_name: meta/llama-3.1-8b-instruct
-    sim_threshold: 0.5
+    sim_threshold: 0.3
     top_k: 4
     chunk_size: 510
     chunk_overlap: 200
