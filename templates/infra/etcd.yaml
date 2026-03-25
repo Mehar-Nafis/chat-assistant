@@ -1,25 +1,7 @@
 ---
-# etcd – PersistentVolumeClaim
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: etcd-data
-  namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "chat-assistance.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  {{- if .Values.storage.storageClassName }}
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.storage.etcd.size }}
----
-# etcd – Deployment
+# etcd – StatefulSet
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: etcd
   namespace: {{ .Values.namespace }}
@@ -27,6 +9,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
     app: etcd
 spec:
+  serviceName: etcd
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -74,10 +57,18 @@ spec:
           volumeMounts:
             - name: etcd-data
               mountPath: /etcd
-      volumes:
-        - name: etcd-data
-          persistentVolumeClaim:
-            claimName: etcd-data
+  volumeClaimTemplates:
+    - metadata:
+        name: etcd-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.etcd.size }}
 ---
 # etcd – Service
 apiVersion: v1

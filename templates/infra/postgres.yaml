@@ -1,25 +1,7 @@
 ---
-# Postgres – PersistentVolumeClaim
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-data
-  namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "chat-assistance.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  {{- if .Values.storage.storageClassName }}
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.storage.postgres.size }}
----
-# Postgres – Deployment
+# Postgres – StatefulSet
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: insurance-postgres
   namespace: {{ .Values.namespace }}
@@ -27,6 +9,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
     app: insurance-postgres
 spec:
+  serviceName: insurance-postgres
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -82,12 +65,21 @@ spec:
               mountPath: /docker-entrypoint-initdb.d/init_db.sql
               subPath: init_db.sql
       volumes:
-        - name: postgres-data
-          persistentVolumeClaim:
-            claimName: postgres-data
         - name: init-db
           configMap:
             name: app-config
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.postgres.size }}
 ---
 # Postgres – Service
 apiVersion: v1

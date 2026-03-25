@@ -1,25 +1,7 @@
 ---
-# MongoDB – PersistentVolumeClaim
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mongo-data
-  namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "chat-assistance.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  {{- if .Values.storage.storageClassName }}
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.storage.mongo.size }}
----
-# MongoDB – Deployment
+# MongoDB – StatefulSet
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: insurance-mongodb
   namespace: {{ .Values.namespace }}
@@ -27,6 +9,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
     app: insurance-mongodb
 spec:
+  serviceName: insurance-mongodb
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -66,10 +49,18 @@ spec:
           volumeMounts:
             - name: mongo-data
               mountPath: /data/db
-      volumes:
-        - name: mongo-data
-          persistentVolumeClaim:
-            claimName: mongo-data
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.mongo.size }}
 ---
 # MongoDB – Service
 apiVersion: v1

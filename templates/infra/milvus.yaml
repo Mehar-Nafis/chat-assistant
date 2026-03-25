@@ -1,25 +1,7 @@
 ---
-# Milvus – PersistentVolumeClaim
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: milvus-storage
-  namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "chat-assistance.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  {{- if .Values.storage.storageClassName }}
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.storage.milvus.size }}
----
-# Milvus – Deployment
+# Milvus – StatefulSet
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: milvus
   namespace: {{ .Values.namespace }}
@@ -27,6 +9,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
     app: milvus
 spec:
+  serviceName: milvus
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -101,10 +84,18 @@ spec:
           volumeMounts:
             - name: milvus-storage
               mountPath: /var/lib/milvus
-      volumes:
-        - name: milvus-storage
-          persistentVolumeClaim:
-            claimName: milvus-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: milvus-storage
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.milvus.size }}
 ---
 # Milvus – Service
 apiVersion: v1

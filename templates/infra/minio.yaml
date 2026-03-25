@@ -1,25 +1,7 @@
 ---
-# MinIO – PersistentVolumeClaim
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: minio-data
-  namespace: {{ .Values.namespace }}
-  labels:
-    {{- include "chat-assistance.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  {{- if .Values.storage.storageClassName }}
-  storageClassName: {{ .Values.storage.storageClassName | quote }}
-  {{- end }}
-  resources:
-    requests:
-      storage: {{ .Values.storage.minio.size }}
----
-# MinIO – Deployment
+# MinIO – StatefulSet
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: minio
   namespace: {{ .Values.namespace }}
@@ -27,6 +9,7 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
     app: minio
 spec:
+  serviceName: minio
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -76,10 +59,18 @@ spec:
           volumeMounts:
             - name: minio-data
               mountPath: /minio_data
-      volumes:
-        - name: minio-data
-          persistentVolumeClaim:
-            claimName: minio-data
+  volumeClaimTemplates:
+    - metadata:
+        name: minio-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.storage.storageClassName }}
+        storageClassName: {{ .Values.storage.storageClassName | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.minio.size }}
 ---
 # MinIO – Service
 apiVersion: v1
