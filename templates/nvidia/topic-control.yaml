@@ -10,6 +10,8 @@ metadata:
     app: topic-control
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: topic-control
@@ -67,8 +69,7 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
-            - name: NIM_MODEL_PROFILE
-              value: "vllm-bf16-tp1"
+            # NIM_MODEL_PROFILE removed — let NIM auto-select optimal profile for L40S
             - name: NIM_MAX_NUM_SEQS
               value: {{ .Values.nvidia.maxNumSeqs | default "2" | quote }}
             - name: NIM_KVCACHE_PERCENT
@@ -96,7 +97,8 @@ spec:
               mountPath: /opt/nim/.cache
       volumes:
         - name: nim-cache
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: nim-cache-topic-control
 ---
 apiVersion: v1
 kind: Service

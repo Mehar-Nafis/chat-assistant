@@ -205,7 +205,7 @@ sharedConfigs:
     retriever_port: "http://catalog-retriever:8010"
     memory_port: "http://memory-retriever:8011"
     rails_port: "http://rails:8012"
-    memory_length: 512
+    memory_length: 256
     top_k_retrieve: 1
     multimodal: true
     unsafe_message: "I'm sorry, but I'm unable to assist with that request as it may violate our content policy."

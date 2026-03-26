@@ -10,6 +10,8 @@ metadata:
     app: llama
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: llama
@@ -46,8 +48,9 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
-            - name: NIM_MODEL_PROFILE
-              value: "vllm-bf16-tp1"
+            # NIM_MODEL_PROFILE intentionally removed — let NIM auto-select the optimal
+            # profile for this GPU (L40S). Forcing vllm-bf16-tp1 enables chunked prefill
+            # which causes 2s-per-token latency. Auto-select matches docker-compose behavior.
             - name: NIM_MAX_NUM_SEQS
               value: {{ .Values.nvidia.maxNumSeqs | default "2" | quote }}
             - name: NIM_KVCACHE_PERCENT
@@ -88,7 +91,8 @@ spec:
               mountPath: /opt/nim/.cache
       volumes:
         - name: nim-cache
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: nim-cache-llama
 ---
 apiVersion: v1
 kind: Service
