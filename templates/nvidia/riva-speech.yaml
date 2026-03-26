@@ -1,3 +1,0 @@
-# riva-speech has been removed from this chart.
-# speech-service (backend) still has RIVA_URI configured; update or remove
-# that env var in templates/backend/speech-service.yaml if not needed.

@@ -94,14 +94,13 @@ nvidia:
   enabled: true
   gpuCount: 1
   llamaGpuCount: 1
-  # L40S has 48GB VRAM – time-slicing shares compute only (not memory)
-  # NIM_KVCACHE_PERCENT: % of GPU memory for KV cache (vLLM backend)
-  kvCachePercent: "45"
-  # NIM_MAX_NUM_SEQS: max parallel sequences (vLLM backend) - keep low to reduce time-slice occupation
-  maxNumSeqs: "2"
-  # NIM_STREAMING_TOKEN_CHUNK_SIZE: tokens emitted per SSE event.
-  # Default 1 = word-by-word (slow UI). Set to 5 for smooth streaming.
-  # Higher values = fewer flushes = smoother but slightly higher time-to-first-token.
+  # Each NIM pod now has a dedicated full L40S (48GB VRAM) — time-slicing removed
+  # NIM_KVCACHE_PERCENT: % of GPU memory reserved for KV cache (vLLM backend)
+  # Full dedicated L40S (48GB) per NIM pod — no time-slicing
+  kvCachePercent: "75"
+  # Allow more parallel sequences now we have a full GPU
+  maxNumSeqs: "8"
+  # NIM_STREAMING_TOKEN_CHUNK_SIZE: tokens per SSE flush for smooth UI streaming
   streamingTokenChunkSize: "5"
   # Optional: label your nodes with `gpu-role` and set these to pin NIM pods
   # oc label node wn1... gpu-role=embedqa-topic
