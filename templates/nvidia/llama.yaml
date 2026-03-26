@@ -61,7 +61,10 @@ spec:
             # Stream in small token chunks (5) for smooth UI render instead of word-by-word single tokens
             # Adjust in values.yaml via nvidia.streamingTokenChunkSize
             - name: NIM_STREAMING_TOKEN_CHUNK_SIZE
-              value: {{ .Values.nvidia.streamingTokenChunkSize | default "5" | quote }}
+              value: {{ .Values.nvidia.streamingTokenChunkSize | default "20" | quote }}
+            # Enable prompt streaming so first tokens reach client immediately
+            - name: NIM_ENABLE_PROMPT_STREAMING
+              value: {{ .Values.nvidia.enablePromptStreaming | default "1" | quote }}
           resources:
             requests:
               cpu: {{ .Values.resources.nvidia.requests.cpu }}

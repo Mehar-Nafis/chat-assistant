@@ -47,12 +47,14 @@ metadata:
   labels:
     {{- include "chat-assistance.labels" . | nindent 4 }}
   annotations:
-    haproxy.router.openshift.io/timeout: 300s
+    haproxy.router.openshift.io/timeout: 600s
     haproxy.router.openshift.io/rewrite-target: /query
     # Critical for SSE streaming: disable buffering so tokens are sent to client immediately
     haproxy.router.openshift.io/disable-buffer: "true"
+    # Force HAProxy to flush SSE chunks immediately — 0 = no response buffer
+    haproxy.router.openshift.io/response-buffer-size: "0"
     # Keep the tunnel alive for long streaming responses
-    haproxy.router.openshift.io/timeout-tunnel: 300s
+    haproxy.router.openshift.io/timeout-tunnel: 600s
 spec:
   {{- if $host }}
   host: {{ $host }}

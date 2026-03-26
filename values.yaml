@@ -100,8 +100,10 @@ nvidia:
   kvCachePercent: "75"
   # Allow more parallel sequences now we have a full GPU
   maxNumSeqs: "8"
-  # NIM_STREAMING_TOKEN_CHUNK_SIZE: tokens per SSE flush for smooth UI streaming
-  streamingTokenChunkSize: "5"
+  # NIM_STREAMING_TOKEN_CHUNK_SIZE: tokens per SSE flush — larger = smoother streaming
+  streamingTokenChunkSize: "20"
+  # Start streaming tokens before full prompt is processed
+  enablePromptStreaming: "1"
   # Optional: label your nodes with `gpu-role` and set these to pin NIM pods
   # oc label node wn1... gpu-role=embedqa-topic
   # oc label node wn2... gpu-role=llama-content
