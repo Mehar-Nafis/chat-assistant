@@ -18,6 +18,8 @@ metadata:
   annotations:
     haproxy.router.openshift.io/timeout: 60s
     haproxy.router.openshift.io/websocket: "true"
+    # Disable HAProxy response buffering so SSE/streaming tokens reach the browser immediately
+    haproxy.router.openshift.io/disable-buffer: "true"
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -47,6 +49,10 @@ metadata:
   annotations:
     haproxy.router.openshift.io/timeout: 300s
     haproxy.router.openshift.io/rewrite-target: /query
+    # Critical for SSE streaming: disable buffering so tokens are sent to client immediately
+    haproxy.router.openshift.io/disable-buffer: "true"
+    # Keep the tunnel alive for long streaming responses
+    haproxy.router.openshift.io/timeout-tunnel: 300s
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -76,6 +82,8 @@ metadata:
   annotations:
     haproxy.router.openshift.io/timeout: 300s
     haproxy.router.openshift.io/rewrite-target: /
+    haproxy.router.openshift.io/disable-buffer: "true"
+    haproxy.router.openshift.io/timeout-tunnel: 300s
 spec:
   {{- if $host }}
   host: {{ $host }}

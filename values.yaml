@@ -99,6 +99,10 @@ nvidia:
   kvCachePercent: "45"
   # NIM_MAX_NUM_SEQS: max parallel sequences (vLLM backend) - keep low to reduce time-slice occupation
   maxNumSeqs: "2"
+  # NIM_STREAMING_TOKEN_CHUNK_SIZE: tokens emitted per SSE event.
+  # Default 1 = word-by-word (slow UI). Set to 5 for smooth streaming.
+  # Higher values = fewer flushes = smoother but slightly higher time-to-first-token.
+  streamingTokenChunkSize: "5"
   # Optional: label your nodes with `gpu-role` and set these to pin NIM pods
   # oc label node wn1... gpu-role=embedqa-topic
   # oc label node wn2... gpu-role=llama-content
