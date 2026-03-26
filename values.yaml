@@ -129,31 +129,31 @@ route:
 resources:
   infra:
     requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 1Gi
-  backend:
-    requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
     limits:
       cpu: "1"
       memory: 2Gi
+  backend:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 4Gi
   nvidia:
     requests:
-      cpu: 500m
-      memory: 16Gi
+      cpu: "2"
+      memory: 32Gi
     limits:
-      cpu: "4"
-      memory: 64Gi
+      cpu: "16"
+      memory: 128Gi
   frontend:
     requests:
-      cpu: 256m
-      memory: 256Mi
+      cpu: 250m
+      memory: 512Mi
     limits:
-      cpu: 500m
+      cpu: "1"
       memory: 2Gi
 
 # ---------------------------------------------------------------------------

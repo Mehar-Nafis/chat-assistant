@@ -1,0 +1,33 @@
+# =============================================================================
+# values-rtx.yaml – NVIDIA RTX PRO 6000 Blackwell Server Edition overrides
+# Usage: helm upgrade --install chat-assistant ./chat-assistant \
+#          -f values.yaml -f values-rtx.yaml -n chat-assistant
+# =============================================================================
+
+nvidia:
+  gpuCount: 1
+  llamaGpuCount: 1
+  kvCachePercent: "80"         # More VRAM available on Blackwell (96GB)
+  maxNumSeqs: "16"             # Higher concurrency with full dedicated GPU
+  streamingTokenChunkSize: "5"
+
+# Pin all GPU workloads to the RTX Blackwell node
+nim:
+  nodeSelector:
+    nvidia.com/gpu.product: "NVIDIA-RTX-PRO-6000-Blackwell-Server-Edition"
+
+llama:
+  nodeSelector:
+    nvidia.com/gpu.product: "NVIDIA-RTX-PRO-6000-Blackwell-Server-Edition"
+
+embedqa:
+  nodeSelector:
+    nvidia.com/gpu.product: "NVIDIA-RTX-PRO-6000-Blackwell-Server-Edition"
+
+content:
+  nodeSelector:
+    nvidia.com/gpu.product: "NVIDIA-RTX-PRO-6000-Blackwell-Server-Edition"
+
+topicControl:
+  nodeSelector:
+    nvidia.com/gpu.product: "NVIDIA-RTX-PRO-6000-Blackwell-Server-Edition"
