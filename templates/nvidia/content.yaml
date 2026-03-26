@@ -72,8 +72,7 @@ spec:
             # NIM_MODEL_PROFILE removed — let NIM auto-select optimal profile for L40S
             - name: NIM_MAX_NUM_SEQS
               value: {{ .Values.nvidia.maxNumSeqs | default "2" | quote }}
-            - name: NIM_KVCACHE_PERCENT
-              value: {{ .Values.nvidia.kvCachePercent | default "75" | quote }}
+            # NIM_KVCACHE_PERCENT removed — vLLM-specific; crashes TRT-LLM auto-selected profiles
           resources:
             {{- include "chat-assistance.resources.nvidia" . | nindent 12 }}
           securityContext:

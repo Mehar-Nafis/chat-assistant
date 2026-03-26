@@ -53,8 +53,8 @@ spec:
             # which causes 2s-per-token latency. Auto-select matches docker-compose behavior.
             - name: NIM_MAX_NUM_SEQS
               value: {{ .Values.nvidia.maxNumSeqs | default "2" | quote }}
-            - name: NIM_KVCACHE_PERCENT
-              value: {{ .Values.nvidia.kvCachePercent | default "75" | quote }}
+            # NIM_KVCACHE_PERCENT removed — vLLM-specific; crashes TRT-LLM auto-selected profiles
+            # NIM/vLLM defaults to 90% KV cache on dedicated GPU which is optimal for L40S
             # Remove vLLM scheduler delay so tokens are dispatched without artificial pause
             - name: VLLM_SLEEP_WHEN_IDLE
               value: "0"
