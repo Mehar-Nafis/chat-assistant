@@ -20,6 +20,7 @@ spec:
         app: milvus
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
+      {{- include "chat-assistance.nodeSelector" . | nindent 6 }}
       # Wait for etcd and MinIO to be ready before starting Milvus
       initContainers:
         - name: wait-for-etcd

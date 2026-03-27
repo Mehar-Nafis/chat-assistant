@@ -17,9 +17,6 @@ metadata:
     {{- include "chat-assistance.labels" . | nindent 4 }}
   annotations:
     haproxy.router.openshift.io/timeout: 60s
-    haproxy.router.openshift.io/websocket: "true"
-    # Disable HAProxy response buffering so SSE/streaming tokens reach the browser immediately
-    haproxy.router.openshift.io/disable-buffer: "true"
 spec:
   {{- if $host }}
   host: {{ $host }}
@@ -49,11 +46,8 @@ metadata:
   annotations:
     haproxy.router.openshift.io/timeout: 600s
     haproxy.router.openshift.io/rewrite-target: /query
-    # Critical for SSE streaming: disable buffering so tokens are sent to client immediately
-    haproxy.router.openshift.io/disable-buffer: "true"
-    # Force HAProxy to flush SSE chunks immediately — 0 = no response buffer
-    haproxy.router.openshift.io/response-buffer-size: "0"
-    # Keep the tunnel alive for long streaming responses
+    # SSE streaming: treat as long-lived tunnel so HAProxy flushes chunks immediately
+    haproxy.router.openshift.io/websocket: "true"
     haproxy.router.openshift.io/timeout-tunnel: 600s
 spec:
   {{- if $host }}
@@ -84,7 +78,8 @@ metadata:
   annotations:
     haproxy.router.openshift.io/timeout: 300s
     haproxy.router.openshift.io/rewrite-target: /
-    haproxy.router.openshift.io/disable-buffer: "true"
+    # SSE streaming: treat as long-lived tunnel so HAProxy flushes chunks immediately
+    haproxy.router.openshift.io/websocket: "true"
     haproxy.router.openshift.io/timeout-tunnel: 300s
 spec:
   {{- if $host }}

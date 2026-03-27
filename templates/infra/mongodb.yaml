@@ -20,6 +20,7 @@ spec:
         app: insurance-mongodb
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
+      {{- include "chat-assistance.nodeSelector" . | nindent 6 }}
       containers:
         - name: mongodb
           image: {{ .Values.images.mongodb }}

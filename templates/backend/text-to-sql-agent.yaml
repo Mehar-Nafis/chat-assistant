@@ -18,6 +18,7 @@ spec:
         app: text-to-sql-agent
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
+      {{- include "chat-assistance.nodeSelector" . | nindent 6 }}
       containers:
         - name: text-to-sql-agent
           image: {{ .Values.images.textToSqlAgent }}

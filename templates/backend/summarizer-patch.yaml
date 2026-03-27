@@ -1,7 +1,8 @@
 ---
-# Patch for summarizer.py to fix NoneType error when LLM doesn't use the tool_calls.
-# Original code: tool_json = json.loads(response.choices[0].message.tool_calls[0].function.arguments)
-# Crashes when tool_calls is None (LLM chose not to use the tool).
+# Patch for summarizer.py: replaces blocking LLM summarization (284s GPU call)
+# with simple truncation that keeps the most recent context.
+# The original LLM call held a NIM sequence slot for ~5 minutes after every query,
+# starving user-facing queries (planner + chatter) of GPU compute.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,12 +15,8 @@ data:
     # SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
     # SPDX-License-Identifier: Apache-2.0
 
-    from openai import OpenAI
     from .agenttypes import State
-    from .functions import summary_function
     import requests
-    import json
-    import os
     import logging
     import sys
     import time
@@ -32,70 +29,42 @@ data:
             stream=sys.stdout
         )
 
-    # Configuration will be loaded by the main application
 
     class SummaryAgent:
         def __init__(self, config):
-            logging.info(f"SummaryAgent.__init__() | Initializing with llm_name={config.llm_name}, llm_port={config.llm_port}")
-            self.llm_name = config.llm_name
-            self.llm_port = config.llm_port
+            logging.info(f"SummaryAgent.__init__() | Initializing (truncation mode, no LLM)")
             self.memory_length = config.memory_length
             self.memory_port = config.memory_port
-            self.model = OpenAI(base_url=config.llm_port, api_key=os.environ["LLM_API_KEY"])
-            logging.info(f"SummaryAgent.__init__() | Initialization complete")
+            logging.info(f"SummaryAgent.__init__() | memory_length={self.memory_length}")
 
         def invoke(self, state: State, verbose: bool = True) -> State:
-            logging.info(f"SummaryAgent.invoke() | Starting with query: {state.query}\n\t Context: {state.context}")
+            logging.info(f"SummaryAgent.invoke() | Starting with query: {state.query}")
             output_state = state
-
-            messages = [
-                {"role": "system", "content": """You are a conversation summarizer for an insurance assistant.
-
-                    CRITICAL RULES:
-                    1. REMOVE ALL DUPLICATE content. If the same policy details appear multiple times, keep only ONE copy.
-                    2. Preserve key policy information in a concise format:
-                       - Policy holder name, user ID, policy number
-                       - Policy type and period
-                       - Sum insured amounts
-                       - Key coverage details (as bullet points, not full paragraphs)
-                    3. Preserve the most recent question and answer exchange.
-                    4. Remove raw document chunks — keep only the extracted facts.
-                    5. Condense aggressively:
-                       - Remove greetings and conversational filler
-                       - Remove repeated policy text blocks
-                       - Summarize coverage details into short bullet points
-                    6. The output should be significantly shorter than the input while retaining all unique facts.
-
-                    The goal is to keep the context small and deduplicated while preserving essential policy facts and recent conversation."""},
-                {"role": "user", "content": f"CONTEXT TO SUMMARIZE:\n{state.context}"}
-            ]
-
             start = time.monotonic()
-            if len(state.context) > self.memory_length:
-                logging.info(f"SummaryAgent.invoke() | Context length is greater than memory length")
-                response = self.model.chat.completions.create(
-                    model=self.llm_name,
-                    messages=messages,
-                    tools=[summary_function],
-                    tool_choice="auto",
-                    stream=False,
-                    temperature=0.0,
-                    max_tokens=self.memory_length
-                )
 
-                # Guard against LLM not using the tool (tool_calls may be None)
-                tool_calls = response.choices[0].message.tool_calls
-                if tool_calls:
-                    tool_json = json.loads(tool_calls[0].function.arguments)
-                    output_state.context = tool_json.get("summary", output_state.context)
-                else:
-                    # LLM returned a direct message instead of tool call — use it as summary
-                    direct_content = response.choices[0].message.content
-                    if direct_content:
-                        output_state.context = direct_content
-                logging.info(f"SummaryAgent.invoke() | Returning final state with response: {output_state.context}")
+            context = state.context or ""
+
+            if len(context) > self.memory_length:
+                logging.info(f"SummaryAgent.invoke() | Context ({len(context)} chars) exceeds memory_length ({self.memory_length}), truncating")
+
+                # Keep the most recent context (end of string) — this preserves
+                # the latest Q&A exchanges and retrieved policy details.
+                # Find a clean sentence boundary near the cut point to avoid
+                # splitting mid-sentence.
+                truncated = context[-self.memory_length:]
+                # Find first newline or period to start at a clean boundary
+                clean_start = -1
+                for sep in ['\n', '. ', '? ', '! ']:
+                    idx = truncated.find(sep)
+                    if idx != -1 and (clean_start == -1 or idx < clean_start):
+                        clean_start = idx
+                if clean_start > 0 and clean_start < len(truncated) // 2:
+                    truncated = truncated[clean_start:].lstrip('\n .?!')
+
+                output_state.context = truncated
+                logging.info(f"SummaryAgent.invoke() | Truncated context to {len(truncated)} chars")
             else:
-                logging.info(f"SummaryAgent.invoke() | Context length is less than memory length -- writing to memory.")
+                logging.info(f"SummaryAgent.invoke() | Context ({len(context)} chars) within memory_length — no truncation needed")
 
             # Include policy_user_id in context if available
             context_to_save = output_state.context
@@ -106,5 +75,5 @@ data:
             requests.post(f"{self.memory_port}/user/{output_state.user_id}/context/replace", json={"new_context": context_to_save})
 
             end = time.monotonic()
-            logging.info(f"SummaryAgent.invoke() | Completed summarization in {end - start} seconds.")
+            logging.info(f"SummaryAgent.invoke() | Completed in {end - start:.3f} seconds")
             return output_state

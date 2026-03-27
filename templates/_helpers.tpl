@@ -70,11 +70,24 @@ limits:
 Frontend resource block.
 */}}
 {{/*
+Global nodeSelector block.
+Emits nodeSelector only when .Values.nodeSelector is non-empty.
+Usage: {{- include "chat-assistance.nodeSelector" . | nindent 6 }}
+*/}}
+{{- define "chat-assistance.nodeSelector" -}}
+{{- if .Values.nodeSelector }}
+nodeSelector:
+  {{- toYaml .Values.nodeSelector | nindent 2 }}
+{{- end }}
+{{- end }}
+
+{{/*
 Topology spread constraint for GPU workloads.
-Spreads GPU pods evenly across worker nodes with maxSkew=1.
+Disabled when nodeSelector is set (spreading across nodes is irrelevant when pinned).
 Usage: {{- include "chat-assistance.gpuSpread" . | nindent 8 }}
 */}}
 {{- define "chat-assistance.gpuSpread" -}}
+{{- if not .Values.nodeSelector }}
 topologySpreadConstraints:
   - maxSkew: 1
     topologyKey: kubernetes.io/hostname
@@ -82,6 +95,7 @@ topologySpreadConstraints:
     labelSelector:
       matchLabels:
         gpu-workload: "true"
+{{- end }}
 {{- end }}
 
 {{- define "chat-assistance.resources.frontend" -}}

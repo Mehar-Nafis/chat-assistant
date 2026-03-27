@@ -22,19 +22,8 @@ spec:
         gpu-workload: "true"
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
-      {{- include "chat-assistance.gpuSpread" . | nindent 6 }}
-      {{- if .Values.nvidia.nodeAffinity.content }}
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              preference:
-                matchExpressions:
-                  - key: gpu-role
-                    operator: In
-                    values:
-                      - {{ .Values.nvidia.nodeAffinity.content }}
-      {{- end }}
+      {{- include "chat-assistance.nodeSelector" . | nindent 6 }}
+
       imagePullSecrets:
         - name: ncr-registry-secret
       initContainers:

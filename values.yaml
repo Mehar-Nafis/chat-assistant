@@ -87,6 +87,18 @@ images:
 replicaCount: 1
 
 # ---------------------------------------------------------------------------
+# Global node selector – pins ALL pods to a specific node group.
+# Uses existing nvidia.com/gpu.product labels set by the NVIDIA GPU operator.
+# Deploy on L40S (wn1 + wn2):
+#   --set "nodeSelector.nvidia\\.com/gpu\\.product=NVIDIA-L40S"
+# Deploy on RTX (c845):
+#   --set "nodeSelector.nvidia\\.com/gpu\\.product=NVIDIA-RTX-PRO-6000-Blackwell-Server-Edition"
+# Leave empty {} to let Kubernetes schedule freely.
+# ---------------------------------------------------------------------------
+nodeSelector:
+  kubernetes.io/hostname: "c845.apjcaipod.dcloud.cisco.com"
+
+# ---------------------------------------------------------------------------
 # NVIDIA feature flag
 # Set nvidia.enabled: false to skip all GPU workloads (riva, llama, embedqa, etc.)
 # ---------------------------------------------------------------------------
@@ -94,24 +106,13 @@ nvidia:
   enabled: true
   gpuCount: 1
   llamaGpuCount: 1
-  # Each NIM pod now has a dedicated full L40S (48GB VRAM) — time-slicing removed
-  # NIM_KVCACHE_PERCENT: % of GPU memory reserved for KV cache (vLLM backend)
-  # Full dedicated L40S (48GB) per NIM pod — no time-slicing
-  kvCachePercent: "75"
-  # Allow more parallel sequences now we have a full GPU
-  maxNumSeqs: "8"
+  # RTX PRO 6000 Blackwell — larger VRAM allows higher cache and concurrency
+  kvCachePercent: "80"
+  maxNumSeqs: "16"
   # NIM_STREAMING_TOKEN_CHUNK_SIZE: tokens per SSE flush — larger = smoother streaming
   streamingTokenChunkSize: "20"
   # Start streaming tokens before full prompt is processed
   enablePromptStreaming: "1"
-  # Optional: label your nodes with `gpu-role` and set these to pin NIM pods
-  # oc label node wn1... gpu-role=embedqa-topic
-  # oc label node wn2... gpu-role=llama-content
-  nodeAffinity:
-    llama: ""          # e.g. llama-content
-    content: ""        # e.g. llama-content
-    topicControl: ""   # e.g. embedqa-topic
-    embedqa: ""        # e.g. embedqa-topic
 
 # ---------------------------------------------------------------------------
 # OpenShift Routes (HAProxy path-based – one Route per service)
@@ -207,7 +208,7 @@ sharedConfigs:
     retriever_port: "http://catalog-retriever:8010"
     memory_port: "http://memory-retriever:8011"
     rails_port: "http://rails:8012"
-    memory_length: 256
+    memory_length: 4096
     top_k_retrieve: 1
     multimodal: true
     unsafe_message: "I'm sorry, but I'm unable to assist with that request as it may violate our content policy."
