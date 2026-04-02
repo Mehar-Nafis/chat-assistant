@@ -120,8 +120,8 @@ nvidia:
   # which requires org-level NGC permissions. Leave empty ("") to let NIM auto-select (needs NGC access).
   # L40S TRT-LLM profiles avoid the chunked-prefill latency caused by vllm-bf16-tp1.
   llamaProfile: "vllm-bf16-tp1"
-  contentProfile: "vllm-bf16-tp1"
-  topicControlProfile: "vllm-bf16-tp1"
+  contentProfile: ""
+  topicControlProfile: ""
   embedqaProfile: ""
 
 # ---------------------------------------------------------------------------
