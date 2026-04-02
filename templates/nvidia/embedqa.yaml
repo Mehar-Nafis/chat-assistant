@@ -30,6 +30,10 @@ spec:
           ports:
             - containerPort: 8000
           env:
+            {{- if .Values.nvidia.embedqaProfile }}
+            - name: NIM_MODEL_PROFILE
+              value: {{ .Values.nvidia.embedqaProfile | quote }}
+            {{- end }}
             - name: NGC_API_KEY
               valueFrom:
                 secretKeyRef:

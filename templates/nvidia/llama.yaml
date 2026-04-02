@@ -43,9 +43,12 @@ spec:
                 secretKeyRef:
                   name: ngc-api-secret
                   key: api-key
-            # NIM_MODEL_PROFILE intentionally removed — let NIM auto-select the optimal
-            # profile for this GPU (L40S). Forcing vllm-bf16-tp1 enables chunked prefill
-            # which causes 2s-per-token latency. Auto-select matches docker-compose behavior.
+            {{- if .Values.nvidia.llamaProfile }}
+            # Explicit profile bypasses NGC hub lookup (inject_ngc_hub/repo.get_all())
+            # which fails when the API key lacks NGC org membership.
+            - name: NIM_MODEL_PROFILE
+              value: {{ .Values.nvidia.llamaProfile | quote }}
+            {{- end }}
             - name: NIM_MAX_NUM_SEQS
               value: {{ .Values.nvidia.maxNumSeqs | default "2" | quote }}
             # NIM_KVCACHE_PERCENT removed — vLLM-specific; crashes TRT-LLM auto-selected profiles
