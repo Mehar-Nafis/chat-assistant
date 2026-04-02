@@ -106,3 +106,21 @@ limits:
   cpu: {{ .Values.resources.frontend.limits.cpu }}
   memory: {{ .Values.resources.frontend.limits.memory }}
 {{- end }}
+
+{{/*
+Anti-affinity for NIM GPU pods.
+Spreads NIM workloads across nodes (preferred) so each physical L40S hosts at most one NIM,
+allowing full kvCachePercent utilisation without cross-slice OOM.
+Usage: {{- include "chat-assistance.nimAntiAffinity" . | nindent 6 }}
+*/}}
+{{- define "chat-assistance.nimAntiAffinity" -}}
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              gpu-workload: "true"
+          topologyKey: kubernetes.io/hostname
+{{- end }}

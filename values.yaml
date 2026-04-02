@@ -108,9 +108,10 @@ nvidia:
   enabled: true
   gpuCount: 1
   llamaGpuCount: 1
-  # L40S (48 GB VRAM per GPU)
+  # 2 nodes × 2 L40S per node = 4 physical GPUs, each time-sliced into 2 → 8 virtual slices.
+  # Pod anti-affinity spreads NIMs across nodes so each physical L40S (48 GB) hosts one NIM.
   kvCachePercent: "75"
-  maxNumSeqs: "2"
+  maxNumSeqs: "4"
   # NIM_STREAMING_TOKEN_CHUNK_SIZE: tokens per SSE flush — larger = smoother streaming
   streamingTokenChunkSize: "20"
   # Start streaming tokens before full prompt is processed
@@ -149,10 +150,10 @@ resources:
   nvidia:
     requests:
       cpu: "2"
-      memory: 32Gi
+      memory: 16Gi
     limits:
-      cpu: "16"
-      memory: 128Gi
+      cpu: "8"
+      memory: 48Gi
   frontend:
     requests:
       cpu: 250m

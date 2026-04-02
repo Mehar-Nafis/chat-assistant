@@ -23,6 +23,7 @@ spec:
         {{- include "chat-assistance.labels" . | nindent 8 }}
     spec:
       {{- include "chat-assistance.nodeSelector" . | nindent 6 }}
+      {{- include "chat-assistance.nimAntiAffinity" . | nindent 6 }}
 
       imagePullSecrets:
         - name: ncr-registry-secret
@@ -54,6 +55,11 @@ spec:
             - containerPort: 8000
           env:
             - name: NGC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ngc-api-secret
+                  key: api-key
+            - name: NIM_NGC_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: ngc-api-secret
