@@ -76,7 +76,7 @@ images:
   userManagement: lakshmilavanya2001/insurance-chat-assistant:user-management
   notificationAgent: lakshmilavanya2001/insurance-chat-assistant:notification-agent
   # NVIDIA / NIM (pulled from nvcr.io – unchanged)
-  llama: "nvcr.io/nim/meta/llama-3.1-8b-instruct:1.2.2"
+  llama: "nvcr.io/nim/meta/llama-3.1-8b-instruct:1.8.6"
   embedqa: "nvcr.io/nim/nvidia/nv-embedqa-e5-v5:1.6"
   content: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-content-safety:1.10.1"
   topicControl: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-topic-control:1.10.1"
