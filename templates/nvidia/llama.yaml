@@ -63,6 +63,12 @@ spec:
             # Enable prompt streaming so first tokens reach client immediately
             - name: NIM_ENABLE_PROMPT_STREAMING
               value: {{ .Values.nvidia.enablePromptStreaming | default "1" | quote }}
+            # Disable InfiniBand in UCX — single-GPU (tp1) doesn't need IB and the
+            # container locked-memory ulimit (8192 kB) is too low for ibv_reg_mr
+            - name: UCX_TLS
+              value: "tcp"
+            - name: NCCL_IB_DISABLE
+              value: "1"
           resources:
             requests:
               cpu: {{ .Values.resources.nvidia.requests.cpu }}
