@@ -33,10 +33,29 @@ data:
 
     rails = Rails().getGuardRails()
 
-    def _extract_content(result: dict, fallback: str) -> dict:
+    def _to_dict(obj):
+        """Coerce NemoGuardrails return values to a plain dict.
+        Newer versions return a GenerationResponse Pydantic model; older
+        versions return a dict. Handle both."""
+        if isinstance(obj, dict):
+            return obj
+        if hasattr(obj, "model_dump"):
+            return obj.model_dump()
+        if hasattr(obj, "dict"):
+            return obj.dict()
+        return {"response": obj}
+
+    def _extract_content(result, fallback: str) -> dict:
         """Add top-level 'content' key from nested NemoGuardrails response."""
-        if "response" in result and result["response"]:
-            result["content"] = result["response"][0].get("content", fallback)
+        result = _to_dict(result)
+        response_list = result.get("response")
+        if response_list:
+            first = response_list[0]
+            if isinstance(first, str):
+                first = {"content": first}
+            else:
+                first = _to_dict(first)
+            result["content"] = first.get("content", fallback) if isinstance(first, dict) else fallback
         else:
             result["content"] = fallback
         return result
