@@ -51,6 +51,22 @@ data:
         async def invoke(self, state: State, verbose: bool = True) -> State:
             logging.info(f"RetrieverAgent.invoke() | Starting with query: {state.query}")
 
+            # Guard against cross-user context bleed. The frontend reuses a
+            # single chat user_id across browser windows, so memory loaded at
+            # the top of the graph may belong to a different policy user.
+            # If the stored USER_ID tag disagrees with the current
+            # policy_user_id, wipe the context so the retriever rebuilds it
+            # from the correct user's documents.
+            if state.policy_user_id and state.context:
+                stored = re.search(r"USER_ID:\s*(\S+)", state.context)
+                if stored and stored.group(1) != state.policy_user_id:
+                    logging.info(
+                        f"RetrieverAgent.invoke() | policy_user_id switch detected "
+                        f"(stored={stored.group(1)}, current={state.policy_user_id}); "
+                        f"clearing stale context"
+                    )
+                    state.context = ""
+
             # Check for pending chat notifications first
             if state.policy_user_id:
                 try:
