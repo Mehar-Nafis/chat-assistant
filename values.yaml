@@ -68,10 +68,14 @@ images:
   postgres: lakshmilavanya2001/insurance-chat-assistant:postgres
   mongodb: lakshmilavanya2001/insurance-chat-assistant:mongo
   # Backend services
-  chainServer: lakshmilavanya2001/insurance-chat-assistant:chain-server
-  catalogRetriever: lakshmilavanya2001/insurance-chat-assistant:catalog-retriever
-  memoryRetriever: lakshmilavanya2001/insurance-chat-assistant:memory-retriever
-  rails: lakshmilavanya2001/insurance-chat-assistant:rails
+  #chainServer: lakshmilavanya2001/insurance-chat-assistant:chain-server
+  chainServer: lakshmilavanya2001/chat-assistant-main:chain-server
+  #catalogRetriever: lakshmilavanya2001/insurance-chat-assistant:catalog-retriever
+  catalogRetriever: lakshmilavanya2001/chat-assistant-main:catalog-retriever
+  #memoryRetriever: lakshmilavanya2001/insurance-chat-assistant:memory-retriever
+  memoryRetriever: lakshmilavanya2001/chat-assistant-main:memory-retriever
+  #rails: lakshmilavanya2001/insurance-chat-assistant:rails
+  rails: lakshmilavanya2001/chat-assistant-main:rails
   textToSqlAgent: lakshmilavanya2001/insurance-chat-assistant:text-to-sql-agent
   userManagement: lakshmilavanya2001/insurance-chat-assistant:user-management
   notificationAgent: lakshmilavanya2001/insurance-chat-assistant:notification-agent
@@ -81,7 +85,8 @@ images:
   content: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-content-safety:1.10.1"
   topicControl: "nvcr.io/nim/nvidia/llama-3.1-nemoguard-8b-topic-control:1.10.1"
   # Frontend
-  frontend: lakshmilavanya2001/insurance-chat-assistant:frontend
+  #frontend: lakshmilavanya2001/insurance-chat-assistant:frontend
+  frontend: lakshmilavanya2001/chat-assistant-main:frontend
 
 # Default replica count for all deployments
 replicaCount: 1
